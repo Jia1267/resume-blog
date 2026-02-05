@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jia Guo - Resume & Portfolio</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; color: #000; background: #fff; line-height: 1.6; }
+        header { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 80px 20px; text-align: center; }
+        header h1 { font-size: 3.5rem; margin-bottom: 10px; font-family: 'Playfair Display', serif; }
+        header p { font-size: 1.3rem; opacity: 0.9; }
+        nav { background: #34495e; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; }
+        nav li { margin: 0 20px; }
+        nav a { color: white; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #3498db; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+        section { margin-bottom: 60px; }
+        section h2 { font-size: 2rem; margin-bottom: 20px; color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .education-item, .project-item, .skill-item { margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-left: 4px solid #3498db; }
+        .education-item h3, .project-item h3 { color: #2c3e50; margin-bottom: 5px; }
+        .education-item p, .project-item p { color: #555; }
+        .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+        .skill-tag { background: #3498db; color: white; padding: 10px 15px; border-radius: 5px; text-align: center; }
+        footer { background: #2c3e50; color: white; text-align: center; padding: 20px; margin-top: 60px; }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Jia Guo</h1>
+        <p>Resume & Portfolio</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#education">Education</a></li>
+            <li><a href="#research">Research</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <section id="about">
+            <h2>About</h2>
+            <p>Computer Science student at UT Dallas with research experience in AI safety, deep learning, and autonomous systems. Passionate about developing innovative solutions to complex problems.</p>
+        </section>
+
+        <section id="education">
+            <h2>Education</h2>
+            <div class="education-item">
+                <h3>University of Texas at Dallas</h3>
+                <p><strong>Bachelor of Science in Computer Science</strong></p>
+                <p>GPA: 3.4 | Expected Graduation: May 2026</p>
+            </div>
+        </section>
+
+        <section id="research">
+            <h2>Research Experience</h2>
+            <div class="education-item">
+                <h3>AI Safety Research Lab</h3>
+                <p>Investigated robustness of deep learning models against adversarial attacks</p>
+            </div>
+            <div class="education-item">
+                <h3>Autonomous Systems Lab</h3>
+                <p>Developed algorithms for autonomous vehicle navigation and path planning</p>
+            </div>
+        </section>
+
+        <section id="projects">
+            <h2>Projects</h2>
+            <div class="project-item">
+                <h3>Deep Learning Model Optimization</h3>
+                <p>Implemented and optimized neural networks for image classification achieving 95% accuracy</p>
+            </div>
+            <div class="project-item">
+                <h3>Autonomous Robot Navigation</h3>
+                <p>Built ROS-based system for autonomous navigation using SLAM and path planning algorithms</p>
+            </div>
+            <div class="project-item">
+                <h3>Natural Language Processing Pipeline</h3>
+                <p>Developed NLP system for sentiment analysis and text classification</p>
+            </div>
+        </section>
+
+        <section id="skills">
+            <h2>Skills</h2>
+            <div class="skills">
+                <div class="skill-tag">Python</div>
+                <div class="skill-tag">C++</div>
+                <div class="skill-tag">Java</div>
+                <div class="skill-tag">TensorFlow</div>
+                <div class="skill-tag">PyTorch</div>
+                <div class="skill-tag">ROS</div>
+                <div class="skill-tag">SQL</div>
+                <div class="skill-tag">Git</div>
+                <div class="skill-tag">Linux</div>
+                <div class="skill-tag">Docker</div>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>Contact</h2>
+            <p>Email: <a href="mailto:jia.guo@utdallas.edu">jia.guo@utdallas.edu</a></p>
+            <p>GitHub: <a href="https://github.com/Jia1267" target="_blank">github.com/Jia1267</a></p>
+            <p>LinkedIn: <a href="https://linkedin.com/in/jiaguo" target="_blank">linkedin.com/in/jiaguo</a></p>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Jia Guo. All rights reserved.</p>
+    </footer>
+</body>
+</html>

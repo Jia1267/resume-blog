@@ -112,6 +112,20 @@
   .nav-icons { display: flex; gap: 16px; font-size: 1.25rem; }
   .nav-icons a { color: var(--muted); text-decoration: none; }
   .nav-icons a:hover { color: var(--text); }
+  .power-btn { background: none; border: 0; padding: 0; color: var(--muted); font-size: 1.25rem; line-height: 0; cursor: pointer; }
+  .power-btn:hover { color: var(--text); }
+  .power-btn[aria-pressed="true"] { color: var(--accent); }
+  .toast {
+    position: fixed; left: 50%; bottom: 92px; z-index: 40; translate: -50% 12px; opacity: 0; pointer-events: none;
+    background: rgb(13 17 25 / .95); border: 1px solid var(--line-strong); color: var(--text); border-radius: 999px;
+    padding: 9px 18px; font: 500 .82rem var(--mono); white-space: nowrap; max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis;
+    transition: opacity .35s var(--ease), translate .35s var(--ease);
+  }
+  .toast.on { opacity: 1; translate: -50% 0; }
+  /* Low power: stop decorative motion that costs frames */
+  .low-power .disc { animation: none; }
+  .low-power .marquee-track { animation-duration: 90s; }
+  .low-power .reveal { transition-duration: .45s; }
   @media (max-width: 760px) { .nav-links { display: none; } }
 
   /* Hero */
@@ -383,6 +397,7 @@
     <div class="nav-icons">
       <a href="https://github.com/Jia1267" aria-label="GitHub" data-magnetic><i class="ph ph-github-logo"></i></a>
       <a href="https://www.linkedin.com/in/jia-guo-ai" aria-label="LinkedIn" data-magnetic><i class="ph ph-linkedin-logo"></i></a>
+      <button class="power-btn" id="powerBtn" aria-pressed="false" aria-label="Low power mode" title="Low power mode"><i class="ph ph-leaf"></i></button>
     </div>
   </div>
 </header>
@@ -553,6 +568,8 @@
     <span><button class="term-trigger" id="termTrigger" aria-label="Open terminal">&gt;_</button> &nbsp; <a href="classic.html">Classic version</a></span>
   </div>
 </footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <div class="player glass" id="player">
   <button class="disc" id="disc" aria-label="Play music"><span class="ic"><i class="ph ph-play" id="discIcon"></i></span></button>
@@ -913,6 +930,7 @@ window.Music = Music;
         ['ls / cat &lt;file&gt;', 'browse the resume as files'],
         ['goto &lt;section&gt;', 'jump to a section of the page'],
         ['music on|off', 'control the soundtrack'],
+        ['power low|auto|high', 'graphics quality and battery use'],
         ['clear, history, exit', 'the usual']
       ]));
       print('<span class="dim">Tab completes commands. Arrow keys walk your history. There may be a few commands not listed here.</span>', 'gap');
@@ -1010,6 +1028,13 @@ window.Music = Music;
       await window.toggleMusic(want);
       print(want ? 'Now playing: Night Signal, generated live in your browser.' : 'Music paused.');
     },
+    power(arg) {
+      if (!window.Power) return print('power: renderer not available', 'err');
+      if (arg && !['low', 'auto', 'high'].includes(arg)) return print('usage: power low|auto|high', 'dim');
+      if (arg) window.Power.set(arg);
+      const names = ['full quality', 'balanced', 'low power'];
+      print(`mode: <span class="k">${window.Power.mode}</span>   current: <span class="k">${names[window.Power.tier]}</span>   fps: ${window.Power.fps || '...'}`);
+    },
     history() { print(history.map((h, i) => `<span class="dim">${String(i + 1).padStart(3)}</span>  ${esc(h)}`).join('\n') || '<span class="dim">no history yet</span>'); },
     echo(...args) { print(esc(args.join(' '))); },
     date() { print(new Date().toString()); },
@@ -1027,7 +1052,7 @@ window.Music = Music;
     coffee() { print('Brewing coffee... done. Robots run on electricity, grad students run on coffee.'); }
   };
   const aliases = { '?': 'help', cls: 'clear', quit: 'exit', cv: 'resume', edu: 'education', exp: 'experience', work: 'experience', proj: 'projects', mail: 'contact', dir: 'ls', cd: 'goto', emacs: 'vim', nano: 'vim' };
-  const visible = ['help', 'whoami', 'about', 'education', 'experience', 'research', 'projects', 'open', 'skills', 'contact', 'resume', 'neofetch', 'ls', 'cat', 'goto', 'music', 'history', 'clear', 'exit'];
+  const visible = ['help', 'whoami', 'about', 'education', 'experience', 'research', 'projects', 'open', 'skills', 'contact', 'resume', 'neofetch', 'ls', 'cat', 'goto', 'music', 'power', 'history', 'clear', 'exit'];
 
   function run(raw) {
     const line = raw.trim();
@@ -1048,7 +1073,7 @@ window.Music = Music;
     if (parts.length <= 1) { pool = visible; prefix = parts[0] || ''; }
     else {
       const c = parts[0].toLowerCase(); prefix = parts[parts.length - 1];
-      pool = c === 'cat' ? Object.keys(files) : c === 'open' ? projects.map(p => p.id) : (c === 'goto' || c === 'cd') ? Object.keys(sections) : c === 'music' ? ['on', 'off'] : [];
+      pool = c === 'cat' ? Object.keys(files) : c === 'open' ? projects.map(p => p.id) : (c === 'goto' || c === 'cd') ? Object.keys(sections) : c === 'music' ? ['on', 'off'] : c === 'power' ? ['low', 'auto', 'high'] : [];
     }
     const hits = pool.filter(x => x.startsWith(prefix.toLowerCase()));
     if (hits.length === 1) { parts[parts.length - 1] = hits[0]; input.value = parts.join(' ') + ' '; }
@@ -1180,12 +1205,20 @@ if (renderer) {
     return out;
   }
 
+  // Shuffle point order so drawing only the first K points still covers the whole shape
+  function shuffle3(arr) {
+    for (let i = arr.length / 3 - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      for (let k = 0; k < 3; k++) { const t = arr[i * 3 + k]; arr[i * 3 + k] = arr[j * 3 + k]; arr[j * 3 + k] = t; }
+    }
+    return arr;
+  }
   const geo = new THREE.BufferGeometry();
   const posText = textPoints();
   geo.setAttribute('position', new THREE.BufferAttribute(posText, 3));
   geo.setAttribute('aText', new THREE.BufferAttribute(posText, 3));
-  geo.setAttribute('aSphere', new THREE.BufferAttribute(spherePoints(), 3));
-  geo.setAttribute('aPlane', new THREE.BufferAttribute(planePoints(), 3));
+  geo.setAttribute('aSphere', new THREE.BufferAttribute(shuffle3(spherePoints()), 3));
+  geo.setAttribute('aPlane', new THREE.BufferAttribute(shuffle3(planePoints()), 3));
   const rnd = new Float32Array(N); for (let i = 0; i < N; i++) rnd[i] = Math.random();
   geo.setAttribute('aRand', new THREE.BufferAttribute(rnd, 1));
 
@@ -1264,6 +1297,60 @@ if (renderer) {
   }
   fit(); addEventListener('resize', fit);
 
+  // ---- Power modes: auto steps quality down when frames drop; low/high are manual ----
+  const basePR = renderer.getPixelRatio(), baseSize = uniforms.uSize.value;
+  const TIERS = [
+    { pr: basePR, share: 1, size: 1 },
+    { pr: Math.min(basePR, 1), share: .6, size: 1.18 },
+    { pr: Math.min(basePR, .75), share: .38, size: 1.4 }
+  ];
+  let mode = 'auto', tier = 0, fpsNow = 0;
+  try { mode = localStorage.getItem('portfolio-power') || 'auto'; } catch (e) {}
+  const lowHint = (navigator.connection && navigator.connection.saveData) || (navigator.deviceMemory && navigator.deviceMemory <= 3);
+  const toastEl = document.getElementById('toast'), powerBtn = document.getElementById('powerBtn');
+  let toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg; toastEl.classList.add('on');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('on'), 2600);
+  }
+  function applyTier(t) {
+    tier = t;
+    const cfg = TIERS[t];
+    renderer.setPixelRatio(cfg.pr); uniforms.uPR.value = cfg.pr;
+    viewW = 0; fit();
+    geo.setDrawRange(0, Math.floor(N * cfg.share));
+    uniforms.uSize.value = baseSize * cfg.size;
+    document.documentElement.classList.toggle('low-power', t === 2);
+    powerBtn.setAttribute('aria-pressed', String(t === 2));
+    powerBtn.title = t === 2 ? 'Low power mode on' : 'Low power mode';
+  }
+  function setMode(m, quiet) {
+    mode = m;
+    try { localStorage.setItem('portfolio-power', m); } catch (e) {}
+    applyTier(m === 'low' ? 2 : m === 'high' ? 0 : (lowHint ? 1 : 0));
+    if (!quiet) toast(m === 'low' ? 'Low power mode on' : m === 'high' ? 'Full quality on' : 'Auto quality on');
+  }
+  setMode(mode, true);
+  powerBtn.addEventListener('click', () => setMode(tier === 2 ? 'high' : 'low'));
+  window.Power = { get mode() { return mode; }, get tier() { return tier; }, get fps() { return fpsNow; }, set: m => setMode(m) };
+
+  let fpsFrames = 0, fpsStart = 0, lastStep = 0, skip = 0;
+  function monitor(now, y, vh) {
+    if (document.hidden) { fpsFrames = 0; fpsStart = now; return; }
+    if (!fpsStart) fpsStart = now;
+    fpsFrames++;
+    const span = now - fpsStart;
+    if (span < 1500) return;
+    fpsNow = Math.round(fpsFrames * 1000 / span);
+    fpsFrames = 0; fpsStart = now;
+    // Judge only after the intro, and give each step time to settle before stepping again
+    if (mode !== 'auto' || now < 4000 || now - lastStep < 3000 || tier >= 2) return;
+    if (fpsNow < 42) {
+      applyTier(tier + 1); lastStep = now;
+      toast(tier === 2 ? 'Switched to low power mode for smoother scrolling' : 'Reduced particle detail for smoother scrolling');
+    }
+  }
+
   let targetMouse = new THREE.Vector2(9, 9), tilt = new THREE.Vector2(0, 0), hoverTarget = 0;
   addEventListener('pointermove', e => {
     targetMouse.set((e.clientX / viewW) * 2 - 1, -(e.clientY / viewH) * 2 + 1); tilt.copy(targetMouse); hoverTarget = 1;
@@ -1303,8 +1390,16 @@ if (renderer) {
 
   const clock = new THREE.Clock();
   let audioSmooth = 0;
-  function frame() {
-    const dt = Math.min(clock.getDelta(), .05);
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const scrollTop = scrollY, viewport = viewH || innerHeight;
+    monitor(now || performance.now(), scrollTop, viewport);
+    // Low power: render every other frame, and only every 4th frame once past the hero
+    if (tier === 2) {
+      skip = (skip + 1) % (scrollTop > viewport * 1.2 ? 4 : 2);
+      if (skip !== 0) return;
+    }
+    const dt = Math.min(clock.getDelta(), tier === 2 ? .15 : .05);
     if (!reduce) uniforms.uTime.value += dt;
     if (entered) introT = Math.min(1, introT + dt * (reduce ? 10 : .55));
     uniforms.uIntro.value = introT;
@@ -1321,7 +1416,6 @@ if (renderer) {
     points.rotation.y += ((tilt.x * (gyro ? .45 : .12)) - points.rotation.y) * (gyro ? .06 : .03);
     points.rotation.x += ((-tilt.y * (gyro ? .3 : .06)) - points.rotation.x) * (gyro ? .06 : .03);
     renderer.render(scene, camera);
-    requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 }

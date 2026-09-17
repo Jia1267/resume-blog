@@ -331,13 +331,37 @@
   .term-form { display: flex; align-items: center; gap: 10px; padding: 12px 20px 16px; font: .9rem var(--mono); border-top: 1px solid var(--line); }
   .term-form label { color: var(--accent); white-space: nowrap; }
   .term-form input { flex: 1; min-width: 0; background: transparent; border: 0; outline: none; color: var(--text); font: inherit; caret-color: var(--accent); }
+  .term-chips {
+    display: flex; gap: 8px; overflow-x: auto; padding: 10px 20px 2px; border-top: 1px solid var(--line);
+    scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain;
+  }
+  .term-chips::-webkit-scrollbar { display: none; }
+  .term-chips button {
+    flex: none; background: rgb(124 196 255 / .06); border: 1px solid var(--line-strong); color: var(--text);
+    font: 500 .78rem var(--mono); padding: 6px 13px; border-radius: 999px; cursor: pointer; min-height: 32px;
+  }
+  .term-chips button:hover { border-color: var(--accent); color: var(--accent); }
+  .term-chips button:active { scale: .96; }
+  .term-form { border-top: 0; }
+  .cmdlink { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); cursor: pointer; text-decoration: underline dotted; text-underline-offset: 4px; }
+  .cmdlink:hover { text-decoration-style: solid; }
+  .tgrid .cmdlink { justify-self: start; text-align: left; }
   .term-trigger { background: none; border: 1px solid var(--line); color: var(--muted); font: 500 .8rem var(--mono); padding: 3px 10px; border-radius: 999px; cursor: pointer; }
   .term-trigger:hover { color: var(--text); border-color: var(--accent); }
   html.term-open body { overflow: hidden; }
   @media (max-width: 600px) {
-    .term { padding: 10px; align-items: end; }
-    .term-win { height: 82dvh; }
-    .term-out, .term-form { font-size: .8rem; }
+    /* Full screen, sized to the visible area above the on-screen keyboard (set from visualViewport) */
+    .term { inset: auto; left: 0; right: 0; top: var(--vv-top, 0px); height: var(--vv-h, 100dvh); padding: 0; place-items: stretch; }
+    .term-win { width: 100%; height: 100%; border: 0; border-radius: 0; translate: 0 24px; scale: 1; }
+    .term-bar { padding: 4px 4px 4px 16px; }
+    .term-close { padding: 13px; font-size: 1.35rem; }
+    .term-out { font-size: .82rem; padding: 14px 16px 8px; }
+    .term-chips { padding: 10px 16px 2px; }
+    .term-chips button { font-size: .8rem; padding: 7px 14px; min-height: 36px; }
+    .term-form { padding: 8px 16px calc(12px + env(safe-area-inset-bottom)); font-size: .9rem; }
+    .term-form input { font-size: 16px; } /* 16px stops iOS from zooming the page on focus */
+    .term-form .p-long { display: none; }
+    .neo pre { font-size: .72rem; }
     .tgrid { grid-template-columns: 1fr; gap: 0; }
     .tgrid .k { margin-top: 6px; }
     .neo { grid-template-columns: 1fr; }
@@ -584,9 +608,23 @@
       <button class="term-close" id="termClose" aria-label="Close terminal"><i class="ph ph-x"></i></button>
     </div>
     <div class="term-out" id="termOut" aria-live="polite"></div>
+    <div class="term-chips" id="termChips" aria-label="Quick commands">
+      <button type="button" data-cmd="help">help</button>
+      <button type="button" data-cmd="about">about</button>
+      <button type="button" data-cmd="projects">projects</button>
+      <button type="button" data-cmd="experience">experience</button>
+      <button type="button" data-cmd="research">research</button>
+      <button type="button" data-cmd="skills">skills</button>
+      <button type="button" data-cmd="contact">contact</button>
+      <button type="button" data-cmd="resume">resume</button>
+      <button type="button" data-cmd="neofetch">neofetch</button>
+      <button type="button" data-cmd="music">music</button>
+      <button type="button" data-cmd="clear">clear</button>
+      <button type="button" data-cmd="exit">exit</button>
+    </div>
     <form class="term-form" id="termForm" autocomplete="off">
-      <label for="termIn">jia@columbia:~$</label>
-      <input id="termIn" type="text" spellcheck="false" autocapitalize="off" aria-label="Terminal command">
+      <label for="termIn"><span class="p-long">jia@columbia:</span>~$</label>
+      <input id="termIn" type="text" spellcheck="false" autocapitalize="off" autocorrect="off" enterkeyhint="go" aria-label="Terminal command" placeholder="type a command">
     </form>
   </div>
 </div>
@@ -902,7 +940,9 @@ window.Music = Music;
     const d = document.createElement('div'); d.className = 'tl' + (cls ? ' ' + cls : ''); d.innerHTML = html;
     out.appendChild(d); out.scrollTop = out.scrollHeight; return d;
   }
-  const grid = rows => `<div class="tgrid">${rows.map(([k, v]) => `<span class="k">${k}</span><span>${v}</span>`).join('')}</div>`;
+  const cmdlink = (cmd, text) => `<button type="button" class="cmdlink k" data-cmd="${cmd}">${text || cmd}</button>`;
+  const grid = rows => `<div class="tgrid">${rows.map(([k, v, c]) => `${c ? cmdlink(c, k) : `<span class="k">${k}</span>`}<span>${v}</span>`).join('')}</div>`;
+  const touchUI = matchMedia('(hover: none)').matches;
 
   const projects = [
     { id: 'yolo', name: 'Real-Time Object Detection & Tracking', desc: 'YOLOv8 fine-tuned on a custom 6-class dataset merged from 11 sources. Live webcam detection and multi-object tracking.', metric: '96.3% mAP@0.5, 94.2% precision, 93.6% recall', stack: 'Python, PyTorch, YOLOv8, OpenCV', url: 'https://github.com/Jia1267/CS4391_YOLO' },
@@ -916,24 +956,26 @@ window.Music = Music;
   const cmds = {
     help() {
       print(grid([
-        ['whoami', 'who is behind this page'],
-        ['about', 'short introduction'],
-        ['education', 'degrees and schools'],
-        ['experience', 'work history'],
-        ['research', 'research projects'],
-        ['projects', 'selected projects'],
+        ['whoami', 'who is behind this page', 'whoami'],
+        ['about', 'short introduction', 'about'],
+        ['education', 'degrees and schools', 'education'],
+        ['experience', 'work history', 'experience'],
+        ['research', 'research projects', 'research'],
+        ['projects', 'selected projects', 'projects'],
         ['open &lt;name&gt;', 'open a project, e.g. open yolo'],
-        ['skills', 'languages, ML, systems'],
-        ['contact', 'how to reach me'],
-        ['resume', 'everything above in one go'],
-        ['neofetch', 'system info, portfolio edition'],
-        ['ls / cat &lt;file&gt;', 'browse the resume as files'],
+        ['skills', 'languages, ML, systems', 'skills'],
+        ['contact', 'how to reach me', 'contact'],
+        ['resume', 'everything above in one go', 'resume'],
+        ['neofetch', 'system info, portfolio edition', 'neofetch'],
+        ['ls / cat &lt;file&gt;', 'browse the resume as files', 'ls'],
         ['goto &lt;section&gt;', 'jump to a section of the page'],
-        ['music on|off', 'control the soundtrack'],
-        ['power low|auto|high', 'graphics quality and battery use'],
+        ['music on|off', 'control the soundtrack', 'music'],
+        ['power low|auto|high', 'graphics quality and battery use', 'power'],
         ['clear, history, exit', 'the usual']
       ]));
-      print('<span class="dim">Tab completes commands. Arrow keys walk your history. There may be a few commands not listed here.</span>', 'gap');
+      print(touchUI
+        ? '<span class="dim">Tap any command above or use the buttons below. There may be a few commands not listed here.</span>'
+        : '<span class="dim">Click a command, or type it. Tab completes, arrow keys walk your history. There may be a few commands not listed here.</span>', 'gap');
     },
     whoami() { print('<span class="k">Jia Guo</span>\nM.S. in Artificial Intelligence (Robotics) @ Columbia University\nB.S. in Computer Science @ UT Dallas'); },
     about() {
@@ -956,8 +998,8 @@ window.Music = Music;
       print('<span class="k">Uncertainty-Aware Deep Learning</span>  AI Safety Lab, UT Dallas  <span class="dim">Sep 2023 - Jan 2024</span>\n  - Curated 500+ images across 20 categories for the ICLR 2024 Hyper Evidential Deep Learning project', 'gap');
     },
     projects() {
-      projects.forEach((p, i) => print(`<span class="dim">[${i + 1}]</span> <span class="k">${p.id}</span>  ${p.name}\n    ${p.desc}\n    <span class="dim">${p.metric} | ${p.stack}</span>`, i ? 'gap' : ''));
-      print('<span class="dim">Type</span> open yolo <span class="dim">or</span> open 2 <span class="dim">to view one.</span>', 'gap');
+      projects.forEach((p, i) => print(`<span class="dim">[${i + 1}]</span> ${cmdlink('open ' + p.id, p.id)}  ${p.name}\n    ${p.desc}\n    <span class="dim">${p.metric} | ${p.stack}</span>`, i ? 'gap' : ''));
+      print(`<span class="dim">${touchUI ? 'Tap a project name to open it.' : 'Click a project name, or type'}</span>${touchUI ? '' : ' open yolo'}`, 'gap');
     },
     open(arg) {
       if (!arg) return print('usage: open &lt;name|number&gt;   try: open yolo', 'dim');
@@ -1009,7 +1051,7 @@ window.Music = Music;
 <span class="k">Music</span>:    Night Signal (${playing ? 'playing' : 'paused'})
 <span class="k">Status</span>:   open to work</div></div>`);
     },
-    ls() { print(Object.keys(files).map(f => `<span class="k">${f}</span>`).join('   ')); },
+    ls() { print(Object.keys(files).map(f => cmdlink('cat ' + f, f)).join('   ')); },
     cat(arg) {
       if (!arg) return print('usage: cat &lt;file&gt;   try: ls', 'dim');
       if (arg === 'resume.pdf') return print('<span class="dim">Binary file. Rendering it as text instead...</span>'), cmds.resume();
@@ -1081,12 +1123,16 @@ window.Music = Music;
   }
 
   function greet() {
-    const lines = ['Welcome to jia\'s portfolio shell.', 'Type <span class="k">help</span> to see commands, or try <span class="k">neofetch</span>.'];
+    const lines = touchUI
+      ? ['Welcome to jia\'s portfolio shell.', 'Tap a command below to start, or try <span class="k">neofetch</span>.']
+      : ['Welcome to jia\'s portfolio shell.', 'Type <span class="k">help</span> to see commands, or try <span class="k">neofetch</span>.'];
     if (reduce) { lines.forEach(l => print(l)); return; }
+    // Reserve the lines first so commands run during the typing animation still print below the greeting
+    const els = lines.map(() => print(''));
     let i = 0;
     (function next() {
       if (i >= lines.length) return;
-      const el = print(''), html = lines[i++], plain = html.replace(/<[^>]+>/g, '');
+      const el = els[i], html = lines[i++], plain = html.replace(/<[^>]+>/g, '');
       let n = 0;
       (function type() {
         n += 2; el.textContent = plain.slice(0, n);
@@ -1095,18 +1141,33 @@ window.Music = Music;
     })();
   }
 
+  // Keep the terminal inside the visible area when the phone keyboard opens
+  const vv = window.visualViewport;
+  function syncViewport() {
+    if (!vv || !term.classList.contains('open')) return;
+    const root = document.documentElement.style;
+    root.setProperty('--vv-h', vv.height + 'px');
+    root.setProperty('--vv-top', vv.offsetTop + 'px');
+    out.scrollTop = out.scrollHeight;
+  }
+  if (vv) { vv.addEventListener('resize', syncViewport); vv.addEventListener('scroll', syncViewport); }
+
   function open() {
     if (term.classList.contains('open')) return;
     clearTimeout(closeTimer);
     lastFocus = document.activeElement;
     term.hidden = false;
     document.documentElement.classList.add('term-open');
-    requestAnimationFrame(() => { term.classList.add('open'); input.focus({ preventScroll: true }); });
+    requestAnimationFrame(() => {
+      term.classList.add('open'); syncViewport();
+      if (!touchUI) input.focus({ preventScroll: true }); // phones: no keyboard until the user taps the input
+    });
     if (!greeted) { greeted = true; greet(); }
   }
   function close() {
     if (!term.classList.contains('open')) return;
     term.classList.remove('open');
+    input.blur();
     document.documentElement.classList.remove('term-open');
     closeTimer = setTimeout(() => { term.hidden = true; }, reduce ? 0 : 360);
     if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
@@ -1127,7 +1188,18 @@ window.Music = Music;
     e.preventDefault(); open();
   });
   term.addEventListener('click', e => { if (e.target === term) close(); });
-  out.addEventListener('click', () => { if (!getSelection().toString()) input.focus({ preventScroll: true }); });
+  function runFromButton(cmd) {
+    run(cmd);
+    if (!touchUI && term.classList.contains('open')) input.focus({ preventScroll: true });
+  }
+  out.addEventListener('click', e => {
+    const b = e.target.closest('[data-cmd]');
+    if (b) { runFromButton(b.dataset.cmd); return; }
+    if (!touchUI && !getSelection().toString()) input.focus({ preventScroll: true });
+  });
+  document.getElementById('termChips').addEventListener('click', e => {
+    const b = e.target.closest('[data-cmd]'); if (b) runFromButton(b.dataset.cmd);
+  });
   document.getElementById('termClose').addEventListener('click', close);
   document.getElementById('termTrigger').addEventListener('click', open);
 

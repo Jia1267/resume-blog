@@ -175,6 +175,14 @@
     font: 500 .72rem var(--mono); background: var(--accent); color: var(--accent-ink); padding: 3px 9px; border-radius: 0 0 6px 0;
   }
   .card:hover .det { opacity: 1; inset: 8px; }
+  @media (hover: none) {
+    .card.seen .det { opacity: 1; inset: 8px; }
+    .card.seen .media img { scale: 1.04; }
+    .card.seen { border-color: var(--line-strong); }
+    .card:active { scale: .99; }
+  }
+  .hint-touch { display: none; margin-top: 18px; font-family: var(--mono); font-size: .78rem; color: var(--muted); line-height: 1.8; }
+  @media (hover: none) { .hint-touch { display: block; } .hint { display: none; } }
 
   .c-yolo { grid-column: span 7; }
   .c-yolo .media { aspect-ratio: 16 / 9; }
@@ -381,6 +389,7 @@
           <a class="btn btn-primary" href="#projects" data-magnetic>View projects</a>
           <a class="btn btn-ghost" href="#contact" data-magnetic>Contact</a>
         </div>
+        <p class="hint-touch reveal" style="--i:3">tap anywhere to send a shockwave<br>drag through the cloud, tilt your phone<br>tap the logo 5 times for a secret</p>
       </div>
       <p class="hint reveal" style="--i:3">move your cursor through the point cloud<br>scroll to reshape it · <kbd>M</kbd> music<br>curious? press <kbd>/</kbd></p>
     </div>
@@ -558,8 +567,9 @@
 <script>
 /* ---------- Generative ambient music (Web Audio, original, no samples) ---------- */
 const Music = (() => {
-  let ctx, master, analyser, dry, reverb, noiseBuf, crackleSrc, timer = null;
-  let playing = false, step = 0, bar = 0, nextTime = 0;
+  let ctx, master, analyser, dry, reverb, noiseBuf, crackleSrc, timer = null, unlockEl = null;
+  let playing = false, step = 0, bar = 0, nextTime = 0, leadIdx = 2;
+  const leadScale = [67, 69, 72, 74, 76, 79, 81, 84]; // C major pentatonic, G4 to C6: where phone speakers are loud
   const bpm = 78, sixteenth = 60 / bpm / 4;
   const chords = [[53, 57, 60, 64], [52, 55, 59, 62], [50, 53, 57, 60], [48, 52, 55, 59]]; // Fmaj7 Em7 Dm7 Cmaj7
   const freq = m => 440 * Math.pow(2, (m - 69) / 12);
@@ -570,12 +580,34 @@ const Music = (() => {
     for (let c = 0; c < 2; c++) { const d = buf.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay); }
     return buf;
   }
+  // iOS mutes Web Audio when the silent switch is on. Playing a silent looping media element
+  // (and setting the audio session to playback where supported) routes audio like a music app.
+  function unlockMedia() {
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+    if (!unlockEl) {
+      const rate = 8000, n = rate / 2, buf = new ArrayBuffer(44 + n), v = new DataView(buf);
+      const w = (o, str) => { for (let i = 0; i < str.length; i++) v.setUint8(o + i, str.charCodeAt(i)); };
+      w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true);
+      v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, rate, true); v.setUint32(28, rate, true);
+      v.setUint16(32, 1, true); v.setUint16(34, 8, true); w(36, 'data'); v.setUint32(40, n, true);
+      for (let i = 0; i < n; i++) v.setUint8(44 + i, 128);
+      unlockEl = new Audio(URL.createObjectURL(new Blob([buf], { type: 'audio/wav' })));
+      unlockEl.loop = true; unlockEl.setAttribute('playsinline', ''); unlockEl.preload = 'auto';
+    }
+    const pr = unlockEl.play(); if (pr && pr.catch) pr.catch(() => {});
+  }
   function init() {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
     master = ctx.createGain(); master.gain.value = 0;
     const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -22; comp.knee.value = 10; comp.ratio.value = 5; comp.attack.value = .004; comp.release.value = .25;
+    const post = ctx.createGain(); post.gain.value = 1.5;
     analyser = ctx.createAnalyser(); analyser.fftSize = 256; analyser.smoothingTimeConstant = .82;
-    master.connect(comp); comp.connect(analyser); analyser.connect(ctx.destination);
+    master.connect(comp); comp.connect(post); post.connect(analyser); analyser.connect(ctx.destination);
+    const wake = () => { if (playing && ctx.state !== 'running') ctx.resume(); };
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) wake(); });
+    addEventListener('touchstart', wake, { passive: true });
+    addEventListener('pointerdown', wake, { passive: true });
     reverb = ctx.createConvolver(); reverb.buffer = impulse(3.4, 2.4);
     const wet = ctx.createGain(); wet.gain.value = .42; reverb.connect(wet); wet.connect(master);
     dry = ctx.createGain(); dry.gain.value = .75; dry.connect(master);
@@ -583,24 +615,38 @@ const Music = (() => {
     const nd = noiseBuf.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
   }
   function pad(notes, t, dur) {
-    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(700, t); lp.frequency.linearRampToValueAtTime(1300, t + dur / 2); lp.frequency.linearRampToValueAtTime(700, t + dur);
-    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.055, t + 1.2); g.gain.setValueAtTime(.055, t + dur - .4); g.gain.linearRampToValueAtTime(0, t + dur + 1.2);
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(1100, t); lp.frequency.linearRampToValueAtTime(2300, t + dur / 2); lp.frequency.linearRampToValueAtTime(1100, t + dur);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.05, t + 1.2); g.gain.setValueAtTime(.05, t + dur - .4); g.gain.linearRampToValueAtTime(0, t + dur + 1.2);
     lp.connect(g); g.connect(dry); g.connect(reverb);
-    notes.forEach(n => [-6, 6].forEach(det => {
-      const o = ctx.createOscillator(); o.type = det < 0 ? 'triangle' : 'sawtooth';
-      o.frequency.value = freq(n); o.detune.value = det; o.connect(lp); o.start(t); o.stop(t + dur + 1.4);
-    }));
+    notes.forEach(n => {
+      [-6, 6].forEach(det => {
+        const o = ctx.createOscillator(); o.type = det < 0 ? 'triangle' : 'sawtooth';
+        o.frequency.value = freq(n); o.detune.value = det; o.connect(lp); o.start(t); o.stop(t + dur + 1.4);
+      });
+      const hi = ctx.createOscillator(); hi.type = 'triangle'; hi.frequency.value = freq(n + 12); // octave layer for small speakers
+      hi.connect(lp); hi.start(t); hi.stop(t + dur + 1.4);
+    });
   }
   function pluck(n, t) {
-    const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = freq(n);
-    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.09, t + .01); g.gain.exponentialRampToValueAtTime(.0005, t + .9);
-    o.connect(g); g.connect(reverb); g.connect(dry); o.start(t); o.stop(t + 1);
+    const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = freq(n);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.1, t + .01); g.gain.exponentialRampToValueAtTime(.0005, t + 1);
+    o.connect(g); g.connect(reverb); g.connect(dry); o.start(t); o.stop(t + 1.1);
+  }
+  function lead(n, t, len) {
+    const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = freq(n);
+    const vib = ctx.createOscillator(), vg = ctx.createGain(); vib.frequency.value = 5.2; vg.gain.value = 7;
+    vib.connect(vg); vg.connect(o.detune);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.075, t + .03);
+    g.gain.setValueAtTime(.075, t + len * .6); g.gain.exponentialRampToValueAtTime(.0008, t + len + .5);
+    o.connect(g); g.connect(dry); g.connect(reverb);
+    o.start(t); vib.start(t); o.stop(t + len + .6); vib.stop(t + len + .6);
   }
   function kick(t) {
     const o = ctx.createOscillator(); o.type = 'sine';
     o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(42, t + .14);
     const g = ctx.createGain(); g.gain.setValueAtTime(.55, t); g.gain.exponentialRampToValueAtTime(.001, t + .38);
     o.connect(g); g.connect(dry); o.start(t); o.stop(t + .4);
+    noiseHit(t, 'bandpass', 1500, .09, .03); // click transient so the beat reads on phone speakers
   }
   function noiseHit(t, type, f, gain, len) {
     const s = ctx.createBufferSource(); s.buffer = noiseBuf;
@@ -614,7 +660,11 @@ const Music = (() => {
       if (step === 0) pad(chord, nextTime, sixteenth * 16);
       if (step === 0 || step === 10) kick(nextTime);
       if (step === 4 || step === 12) noiseHit(nextTime, 'bandpass', 1800, .07, .12);
-      if (step % 4 === 2) noiseHit(nextTime + sixteenth * .12, 'highpass', 7000, .025, .05);
+      if (step % 4 === 2) noiseHit(nextTime + sixteenth * .12, 'highpass', 7000, .04, .05);
+      if (bar % 2 === 1 && [0, 3, 6, 8, 11].includes(step) && Math.random() < .85) {
+        leadIdx = Math.max(0, Math.min(leadScale.length - 1, leadIdx + [-2, -1, 1, 1, 2][Math.floor(Math.random() * 5)]));
+        lead(leadScale[leadIdx], nextTime, sixteenth * (step === 11 ? 5 : 3));
+      }
       if (step % 2 === 0 && Math.random() < .5) {
         const n = chord[Math.floor(Math.random() * chord.length)] + 12 + (Math.random() < .3 ? 12 : 0);
         pluck(n, nextTime);
@@ -633,12 +683,13 @@ const Music = (() => {
     get playing() { return playing; },
     async play() {
       if (!ctx) init();
+      unlockMedia();
       await ctx.resume();
       if (playing) return;
       playing = true; step = 0; nextTime = ctx.currentTime + .1;
       master.gain.cancelScheduledValues(ctx.currentTime);
       master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
-      master.gain.linearRampToValueAtTime(.8, ctx.currentTime + 2);
+      master.gain.linearRampToValueAtTime(.9, ctx.currentTime + 1.5);
       startCrackle();
       timer = setInterval(schedule, 25); schedule();
     },
@@ -649,7 +700,7 @@ const Music = (() => {
       master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
       master.gain.linearRampToValueAtTime(0, ctx.currentTime + .6);
       clearInterval(timer);
-      setTimeout(() => { if (!playing) { try { crackleSrc.stop(); } catch (e) {} ctx.suspend(); } }, 800);
+      setTimeout(() => { if (!playing) { try { crackleSrc.stop(); } catch (e) {} if (unlockEl) unlockEl.pause(); ctx.suspend(); } }, 800);
     },
     level() {
       if (!analyser || !playing) return 0;
@@ -672,6 +723,7 @@ window.Music = Music;
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = matchMedia('(pointer: fine)').matches;
+  const touch = matchMedia('(hover: none)').matches;
   const $ = s => document.querySelector(s);
   const boot = $('#boot'), player = $('#player'), disc = $('#disc'), discIcon = $('#discIcon');
 
@@ -689,7 +741,10 @@ window.Music = Music;
   }
   requestAnimationFrame(bootTick);
 
+  if (touch) $('#bootHint').textContent = 'No sound? Switch off silent mode and turn the volume up.';
   function enter(withSound) {
+    // iOS asks for motion access; this has to happen inside the tap
+    try { if (touch && window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') DeviceOrientationEvent.requestPermission().catch(() => {}); } catch (e) {}
     boot.classList.add('gone'); document.body.classList.remove('locked');
     player.classList.add('on');
     if (withSound) toggleMusic(true);
@@ -760,6 +815,12 @@ window.Music = Music;
       const p = Math.min(1, (now - t) / 1400), v = target * (1 - Math.pow(1 - p, 3));
       el.textContent = v.toFixed(dec) + suffix; if (p < 1) requestAnimationFrame(tick);
     })(t);
+  }
+
+  // Touch screens have no hover: show the detection box when a card is centered in view
+  if (touch) {
+    const seen = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('seen', e.isIntersecting)), { threshold: .55 });
+    document.querySelectorAll('.card').forEach(c => seen.observe(c));
   }
 
   if (reduce || !fine) return;
@@ -1119,15 +1180,16 @@ if (renderer) {
   const uniforms = {
     uTime: { value: 0 }, uMorph: { value: 0 }, uAudio: { value: 0 }, uMouse: { value: new THREE.Vector2(9, 9) },
     uHover: { value: 0 }, uAspect: { value: innerWidth / innerHeight }, uPR: { value: renderer.getPixelRatio() },
-    uSize: { value: mobile ? 2.6 : 2.2 }, uOpacity: { value: 1 }, uIntro: { value: 0 }, uFit: { value: 1 }
+    uSize: { value: mobile ? 2.6 : 2.2 }, uOpacity: { value: 1 }, uIntro: { value: 0 }, uFit: { value: 1 },
+    uPulse: { value: 0 }, uPulseC: { value: new THREE.Vector2(0, 0) }
   };
 
   const mat = new THREE.ShaderMaterial({
     uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     vertexShader: `
       attribute vec3 aText; attribute vec3 aSphere; attribute vec3 aPlane; attribute float aRand;
-      uniform float uTime, uMorph, uAudio, uHover, uAspect, uPR, uSize, uIntro, uFit;
-      uniform vec2 uMouse;
+      uniform float uTime, uMorph, uAudio, uHover, uAspect, uPR, uSize, uIntro, uFit, uPulse;
+      uniform vec2 uMouse, uPulseC;
       varying float vA; varying float vS;
       mat2 rot(float a){ float c=cos(a), s=sin(a); return mat2(c,-s,s,c); }
       void main(){
@@ -1151,9 +1213,15 @@ if (renderer) {
         float force = smoothstep(.32, 0., dist) * uHover;
         vec2 dir = d / max(dist, .0001); dir.x /= uAspect;
         clip.xy += dir * force * .22 * clip.w;
+        // tap shockwave: an expanding ring pushes points outward
+        vec2 pd = ndc - uPulseC; pd.x *= uAspect; float pdist = length(pd);
+        float ring = (1. - uPulse) * 1.7;
+        float wave = exp(-pow((pdist - ring) * 6., 2.)) * uPulse;
+        vec2 pdir = pd / max(pdist, .0001); pdir.x /= uAspect;
+        clip.xy += pdir * wave * .38 * clip.w;
         gl_Position = clip;
-        gl_PointSize = uSize * (.55 + aRand * .9) * (1. + uAudio * 1.2 + force * 1.5) * uPR * (9. / -mv.z);
-        vA = .35 + .65 * aRand + force; vS = s1 * (1. - s2);
+        gl_PointSize = uSize * (.55 + aRand * .9) * (1. + uAudio * 1.2 + force * 1.5 + wave * 2.) * uPR * (9. / -mv.z);
+        vA = .35 + .65 * aRand + force + wave; vS = s1 * (1. - s2);
       }`,
     fragmentShader: `
       uniform float uOpacity; varying float vA; varying float vS;
@@ -1175,7 +1243,7 @@ if (renderer) {
     camera.aspect = w / h; camera.updateProjectionMatrix();
     uniforms.uAspect.value = w / h;
     const visibleW = 2 * Math.tan(THREE.MathUtils.degToRad(25)) * 10 * (w / h);
-    uniforms.uFit.value = Math.min(1.4, (visibleW * .86) / (textHalfWidth * 2));
+    uniforms.uFit.value = Math.min(1.4, (visibleW * .8) / (textHalfWidth * 2));
   }
   fit(); addEventListener('resize', fit);
 
@@ -1185,6 +1253,32 @@ if (renderer) {
   });
   addEventListener('pointerleave', () => { hoverTarget = 0; });
   document.addEventListener('pointerout', e => { if (!e.relatedTarget) hoverTarget = 0; });
+
+  // Touch: pointer events stop once the page starts scrolling, so track touches directly
+  const toNdc = (x, y) => new THREE.Vector2((x / innerWidth) * 2 - 1, -(y / innerHeight) * 2 + 1);
+  let releaseTimer = null, gyro = false;
+  addEventListener('touchstart', e => {
+    const t = e.touches[0]; if (!t) return;
+    targetMouse.copy(toNdc(t.clientX, t.clientY)); uniforms.uMouse.value.copy(targetMouse);
+    hoverTarget = 1; clearTimeout(releaseTimer);
+  }, { passive: true });
+  addEventListener('touchmove', e => {
+    const t = e.touches[0]; if (!t) return;
+    targetMouse.copy(toNdc(t.clientX, t.clientY)); hoverTarget = 1;
+  }, { passive: true });
+  addEventListener('touchend', () => { clearTimeout(releaseTimer); releaseTimer = setTimeout(() => { hoverTarget = 0; }, 650); }, { passive: true });
+
+  // Tap or click anywhere: shockwave
+  addEventListener('pointerdown', e => {
+    uniforms.uPulseC.value.copy(toNdc(e.clientX, e.clientY)); uniforms.uPulse.value = 1;
+  }, { passive: true });
+
+  // Phone tilt rotates the cloud
+  addEventListener('deviceorientation', e => {
+    if (e.gamma == null || e.beta == null) return;
+    gyro = true;
+    tilt.set(Math.max(-1, Math.min(1, e.gamma / 25)), Math.max(-1, Math.min(1, (e.beta - 45) / 25)));
+  });
 
   let entered = false, introT = 0;
   addEventListener('portfolio:enter', () => { entered = true; });
@@ -1203,11 +1297,12 @@ if (renderer) {
     uniforms.uOpacity.value = y > vh * 2.6 ? Math.max(.35, 1 - (y - vh * 2.6) / (vh * 2)) : 1;
     uniforms.uMouse.value.lerp(targetMouse, .15);
     uniforms.uHover.value += (hoverTarget - uniforms.uHover.value) * .08;
+    uniforms.uPulse.value = Math.max(0, uniforms.uPulse.value - dt * (reduce ? 10 : .85));
     const lvl = window.Music ? window.Music.level() : 0;
     audioSmooth += (lvl - audioSmooth) * .25;
-    uniforms.uAudio.value = audioSmooth;
-    points.rotation.y += ((tilt.x * .12) - points.rotation.y) * .03;
-    points.rotation.x += ((-tilt.y * .06) - points.rotation.x) * .03;
+    uniforms.uAudio.value = Math.min(.6, audioSmooth * .55);
+    points.rotation.y += ((tilt.x * (gyro ? .45 : .12)) - points.rotation.y) * (gyro ? .06 : .03);
+    points.rotation.x += ((-tilt.y * (gyro ? .3 : .06)) - points.rotation.x) * (gyro ? .06 : .03);
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }

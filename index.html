@@ -43,10 +43,12 @@
   }
   *, *::before, *::after { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
+  /* No pull-to-refresh or rubber-band: dragging through the point cloud should never reload the page */
+  html, body { overscroll-behavior-y: none; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
     font-family: var(--font); line-height: 1.6; -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    overflow-x: hidden; overflow-x: clip;
   }
   body.locked { overflow: hidden; }
   img { max-width: 100%; display: block; }
@@ -60,7 +62,8 @@
   .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 24px; }
 
   /* Particle canvas sits behind everything */
-  #field { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+  /* 100vh is the large viewport on phones, so the canvas does not resize when the address bar slides */
+  #field { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; display: block; }
   main, header.nav, footer { position: relative; z-index: 2; }
   .grain { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .06;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -112,7 +115,7 @@
   @media (max-width: 760px) { .nav-links { display: none; } }
 
   /* Hero */
-  .hero { min-height: 100dvh; display: flex; align-items: flex-end; padding-block: 120px 128px; }
+  .hero { min-height: 100vh; min-height: 100svh; display: flex; align-items: flex-end; padding-block: 120px 128px; }
   .hero .wrap { width: 100%; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 32px; }
   .hero h1.fallback-name { display: none; font-size: clamp(3rem, 10vw, 7rem); font-weight: 800; }
   .no-webgl .hero h1.fallback-name { display: block; margin-bottom: 24px; }
@@ -180,6 +183,13 @@
     .card.seen .media img { scale: 1.04; }
     .card.seen { border-color: var(--line-strong); }
     .card:active { scale: .99; }
+  }
+  /* Phones: blur over a live WebGL canvas is re-rendered every frame and makes scrolling stutter */
+  @media (hover: none) {
+    .glass, .nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+    .glass { background: rgb(13 17 25 / .92); }
+    .nav { background: rgb(7 9 13 / .95) !important; }
+    .grain { display: none; }
   }
   .hint-touch { display: none; margin-top: 18px; font-family: var(--mono); font-size: .78rem; color: var(--muted); line-height: 1.8; }
   @media (hover: none) { .hint-touch { display: block; } .hint { display: none; } }
@@ -601,7 +611,8 @@ const Music = (() => {
     master = ctx.createGain(); master.gain.value = 0;
     const comp = ctx.createDynamicsCompressor();
     comp.threshold.value = -22; comp.knee.value = 10; comp.ratio.value = 5; comp.attack.value = .004; comp.release.value = .25;
-    const post = ctx.createGain(); post.gain.value = 1.5;
+    // Phones need extra loudness for small speakers; laptops and headphones do not
+    const post = ctx.createGain(); post.gain.value = matchMedia('(hover: none)').matches ? 1.5 : .6;
     analyser = ctx.createAnalyser(); analyser.fftSize = 256; analyser.smoothingTimeConstant = .82;
     master.connect(comp); comp.connect(post); post.connect(analyser); analyser.connect(ctx.destination);
     const wake = () => { if (playing && ctx.state !== 'running') ctx.resume(); };
@@ -1111,6 +1122,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.m
 const canvas = document.getElementById('field');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const mobile = matchMedia('(max-width: 760px)').matches;
+const touchDevice = matchMedia('(hover: none)').matches;
 let renderer;
 try {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
@@ -1119,8 +1131,8 @@ try {
 }
 
 if (renderer) {
-  const N = mobile ? 4800 : 9000;
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  const N = mobile ? 4000 : 9000;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, touchDevice ? 1.5 : 2));
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, .1, 100);
   camera.position.set(0, 0, 10);
@@ -1237,8 +1249,13 @@ if (renderer) {
   const points = new THREE.Points(geo, mat);
   scene.add(points);
 
+  // Size from the canvas box (100vh). On phones this stays constant while the address bar
+  // shows and hides, so scrolling no longer triggers a renderer resize.
+  let viewW = 0, viewH = 0;
   function fit() {
-    const w = innerWidth, h = innerHeight;
+    const w = canvas.clientWidth || innerWidth, h = canvas.clientHeight || innerHeight;
+    if (w === viewW && h === viewH) return;
+    viewW = w; viewH = h;
     renderer.setSize(w, h, false);
     camera.aspect = w / h; camera.updateProjectionMatrix();
     uniforms.uAspect.value = w / h;
@@ -1249,13 +1266,13 @@ if (renderer) {
 
   let targetMouse = new THREE.Vector2(9, 9), tilt = new THREE.Vector2(0, 0), hoverTarget = 0;
   addEventListener('pointermove', e => {
-    targetMouse.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); tilt.copy(targetMouse); hoverTarget = 1;
+    targetMouse.set((e.clientX / viewW) * 2 - 1, -(e.clientY / viewH) * 2 + 1); tilt.copy(targetMouse); hoverTarget = 1;
   });
   addEventListener('pointerleave', () => { hoverTarget = 0; });
   document.addEventListener('pointerout', e => { if (!e.relatedTarget) hoverTarget = 0; });
 
   // Touch: pointer events stop once the page starts scrolling, so track touches directly
-  const toNdc = (x, y) => new THREE.Vector2((x / innerWidth) * 2 - 1, -(y / innerHeight) * 2 + 1);
+  const toNdc = (x, y) => new THREE.Vector2((x / viewW) * 2 - 1, -(y / viewH) * 2 + 1);
   let releaseTimer = null, gyro = false;
   addEventListener('touchstart', e => {
     const t = e.touches[0]; if (!t) return;
@@ -1268,8 +1285,8 @@ if (renderer) {
   }, { passive: true });
   addEventListener('touchend', () => { clearTimeout(releaseTimer); releaseTimer = setTimeout(() => { hoverTarget = 0; }, 650); }, { passive: true });
 
-  // Tap or click anywhere: shockwave
-  addEventListener('pointerdown', e => {
+  // Tap or click anywhere: shockwave. 'click' only fires for real taps, not for the start of a scroll.
+  addEventListener('click', e => {
     uniforms.uPulseC.value.copy(toNdc(e.clientX, e.clientY)); uniforms.uPulse.value = 1;
   }, { passive: true });
 
@@ -1291,7 +1308,7 @@ if (renderer) {
     if (!reduce) uniforms.uTime.value += dt;
     if (entered) introT = Math.min(1, introT + dt * (reduce ? 10 : .55));
     uniforms.uIntro.value = introT;
-    const vh = innerHeight, y = scrollY;
+    const vh = viewH || innerHeight, y = scrollY;
     const morph = y < vh * .9 ? (y / (vh * .9)) : 1 + Math.min(1, (y - vh * .9) / (vh * 1.4));
     uniforms.uMorph.value += (morph - uniforms.uMorph.value) * (reduce ? 1 : .08);
     uniforms.uOpacity.value = y > vh * 2.6 ? Math.max(.35, 1 - (y - vh * 2.6) / (vh * 2)) : 1;

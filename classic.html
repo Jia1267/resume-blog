@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jia Guo | AI, Computer Vision & Software Engineering</title>
+<meta name="description" content="Jia Guo is an M.S. in Artificial Intelligence (Robotics) student at Columbia University building machine learning, computer vision, and software systems.">
+<link rel="canonical" href="https://jia1267.github.io/resume-blog/classic.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Jia Guo | AI, Computer Vision & Software Engineering">
+<meta property="og:description" content="M.S. in AI (Robotics) at Columbia University. Projects in computer vision, machine learning, and full-stack software.">
+<meta property="og:url" content="https://jia1267.github.io/resume-blog/">
+<meta property="og:image" content="https://jia1267.github.io/resume-blog/assets/img/uninest.webp">
+<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1116" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1"></script>
+<style>
+  /* Tokens. Shape rule: buttons and chips are full-pill, cards and media are 16px, nothing else is rounded. */
+  :root {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --surface-2: #eef1f5;
+    --text: #151a22;
+    --muted: #525c6b;
+    --line: #dde2e9;
+    --accent: #2a5595;
+    --accent-ink: #ffffff;
+    --accent-soft: #e3ebf7;
+    --shadow: 0 1px 2px rgb(21 40 70 / .06), 0 8px 24px rgb(21 40 70 / .06);
+    --radius: 16px;
+    --font: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1116;
+      --surface: #151a22;
+      --surface-2: #1b2230;
+      --text: #e8ecf2;
+      --muted: #a2acba;
+      --line: #273042;
+      --accent: #8fb3e6;
+      --accent-ink: #0e1116;
+      --accent-soft: #1c2b42;
+      --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px rgb(0 0 0 / .25);
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding-inline: 24px; }
+  section { padding-block: 88px; }
+  h1, h2, h3 { margin: 0; letter-spacing: -0.02em; line-height: 1.15; }
+  h2 { font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 600; margin-bottom: 36px; }
+  h3 { font-size: 1.2rem; font-weight: 600; }
+  p { margin: 0; }
+  .muted { color: var(--muted); }
+  .mono { font-family: var(--mono); font-size: .875rem; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+  /* Nav */
+  .nav {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav .wrap { height: 64px; display: flex; align-items: center; gap: 28px; }
+  .brand { font-weight: 600; text-decoration: none; margin-right: auto; }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links a, .nav-icons a { text-decoration: none; color: var(--muted); font-size: .95rem; transition: color .2s; }
+  .nav-links a:hover, .nav-icons a:hover { color: var(--text); }
+  .nav-icons { display: flex; gap: 14px; font-size: 1.25rem; }
+  @media (max-width: 720px) { .nav-links { display: none; } }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px; border-radius: 999px;
+    font-weight: 500; text-decoration: none; white-space: nowrap;
+    transition: transform .2s cubic-bezier(.16,1,.3,1), background-color .2s, border-color .2s;
+  }
+  .btn:active { transform: translateY(1px) scale(.98); }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { background: color-mix(in srgb, var(--accent) 88%, var(--text)); }
+  .btn-ghost { border: 1px solid var(--line); color: var(--text); background: var(--surface); }
+  .btn-ghost:hover { border-color: var(--accent); }
+
+  /* Hero: asymmetric split */
+  .hero { padding-block: 72px 88px; }
+  .hero .wrap { display: grid; grid-template-columns: 1.35fr 1fr; gap: 64px; align-items: center; }
+  .hero h1 { font-size: clamp(2.75rem, 6vw, 4.25rem); font-weight: 700; letter-spacing: -0.035em; }
+  .hero .lead { font-size: 1.25rem; color: var(--muted); max-width: 34ch; margin-top: 20px; line-height: 1.5; }
+  .hero .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .portrait {
+    border-radius: var(--radius); overflow: hidden; aspect-ratio: 4 / 5;
+    background: var(--surface-2); box-shadow: var(--shadow); max-width: 380px; justify-self: end; width: 100%;
+  }
+  .portrait img { width: 100%; height: 100%; object-fit: cover; }
+  @media (max-width: 860px) {
+    .hero .wrap { grid-template-columns: 1fr; gap: 40px; }
+    .portrait { justify-self: start; max-width: 280px; }
+  }
+
+  /* Projects: bento with exactly four cells */
+  .bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+  .tile {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow);
+    transition: transform .35s cubic-bezier(.16,1,.3,1), border-color .25s;
+  }
+  .tile:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+  .tile .media { background: var(--surface-2); overflow: hidden; }
+  .tile .media img { width: 100%; height: 100%; object-fit: cover; }
+  .tile .body { padding: 24px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+  .tile .metric { font-family: var(--mono); font-size: .9rem; color: var(--accent); }
+  .tile .links { display: flex; gap: 18px; margin-top: auto; padding-top: 8px; }
+  .tile .links a { text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
+  .tile .links a:hover { color: var(--accent); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-family: var(--mono); font-size: .78rem; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+  .t-yolo { grid-column: span 7; }
+  .t-yolo .media { aspect-ratio: 16 / 9; }
+  .t-uni { grid-column: span 5; grid-row: span 2; }
+  .t-uni .media { aspect-ratio: 4 / 3.4; }
+  .t-rnn { grid-column: span 4; }
+  .t-rnn .media { aspect-ratio: 2 / 1; background: #fff; }
+  .t-rnn .media img { object-fit: contain; }
+  .t-game { grid-column: span 3; background: var(--accent-soft); border-color: transparent; }
+  .t-game .body { justify-content: flex-start; }
+  .t-game .icon { font-size: 2.25rem; color: var(--accent); }
+  @media (max-width: 960px) {
+    .t-yolo, .t-uni { grid-column: span 12; grid-row: auto; }
+    .t-rnn, .t-game { grid-column: span 6; }
+  }
+  @media (max-width: 640px) {
+    .t-rnn, .t-game { grid-column: span 12; }
+  }
+
+  /* Research: metric-led stack */
+  .research-item { display: grid; grid-template-columns: 220px 1fr; gap: 40px; padding-block: 32px; }
+  .research-item + .research-item { border-top: 1px solid var(--line); }
+  .big-num { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 700; letter-spacing: -0.03em; color: var(--accent); line-height: 1; }
+  .research-item .caption { margin-top: 10px; font-size: .9rem; }
+  .research-item h3 { margin-bottom: 6px; }
+  .research-item .where { margin-bottom: 14px; }
+  .research-item ul { margin: 0; padding-left: 1.1em; color: var(--muted); max-width: 70ch; }
+  .research-item li + li { margin-top: 6px; }
+  @media (max-width: 720px) { .research-item { grid-template-columns: 1fr; gap: 16px; } }
+
+  /* Experience: timeline columns */
+  .xp { display: grid; grid-template-columns: 200px 1fr; gap: 0 40px; }
+  .xp .when { padding-top: 4px; color: var(--muted); }
+  .xp .what { padding-bottom: 40px; border-left: 2px solid var(--line); padding-left: 32px; position: relative; }
+  .xp .what::before { content: ""; position: absolute; left: -7px; top: 8px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+  .xp .what:last-child { padding-bottom: 0; }
+  .xp .org { margin: 4px 0 12px; }
+  .xp ul { margin: 0; padding-left: 1.1em; color: var(--muted); max-width: 70ch; }
+  .xp li + li { margin-top: 6px; }
+  @media (max-width: 720px) {
+    .xp { grid-template-columns: 1fr; }
+    .xp .when { padding-left: 34px; }
+  }
+
+  /* Education and skills: two panels */
+  .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 32px; }
+  .panel h3 { margin-bottom: 24px; }
+  .school + .school { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .school strong { display: block; font-weight: 600; }
+  .skill-group + .skill-group { margin-top: 20px; }
+  .skill-group p { font-weight: 500; margin-bottom: 10px; }
+  @media (max-width: 860px) { .edu-grid { grid-template-columns: 1fr; } }
+
+  /* Contact band */
+  .contact { background: var(--surface); border-top: 1px solid var(--line); }
+  .contact h2 { max-width: 30ch; margin-bottom: 20px; }
+  .contact .email { font-size: clamp(1.25rem, 3vw, 1.75rem); font-weight: 500; color: var(--accent); text-decoration: none; }
+  .contact .email:hover { text-decoration: underline; text-underline-offset: 6px; }
+  .contact .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  footer { padding-block: 32px; color: var(--muted); font-size: .9rem; }
+
+  /* Reveal motion: communicates reading order as sections enter */
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); transition-delay: calc(var(--i, 0) * 70ms); }
+    .reveal.in { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .tile, .btn { transition: none; }
+    .tile:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">Jia Guo</a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#projects">Projects</a>
+      <a href="#research">Research</a>
+      <a href="#experience">Experience</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-icons">
+      <a href="https://github.com/Jia1267" aria-label="GitHub"><i class="ph ph-github-logo"></i></a>
+      <a href="https://www.linkedin.com/in/jia-guo-ai" aria-label="LinkedIn"><i class="ph ph-linkedin-logo"></i></a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1 class="reveal">Jia Guo</h1>
+        <p class="lead reveal" style="--i:1">M.S. in Artificial Intelligence (Robotics) at Columbia. I build machine learning, computer vision, and software systems.</p>
+        <div class="actions reveal" style="--i:2">
+          <a class="btn btn-primary" href="#projects">View projects</a>
+          <a class="btn btn-ghost" href="https://www.linkedin.com/in/jia-guo-ai"><i class="ph ph-linkedin-logo"></i> LinkedIn</a>
+        </div>
+      </div>
+      <div class="portrait reveal" style="--i:2">
+        <img src="assets/img/jia-guo.webp" alt="Portrait of Jia Guo" width="460" height="460" fetchpriority="high">
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="wrap">
+      <h2 class="reveal">Selected projects</h2>
+      <div class="bento">
+        <article class="tile t-yolo reveal">
+          <div class="media"><img src="assets/img/yolo-detect.webp" alt="YOLOv8 model detecting a computer mouse with 0.97 confidence" width="1200" height="675" loading="lazy"></div>
+          <div class="body">
+            <h3>Real-Time Object Detection & Tracking</h3>
+            <p class="muted">Fine-tuned YOLOv8 on a custom six-class dataset merged from 11 sources, then ran live webcam detection and multi-object tracking.</p>
+            <p class="metric">96.3% mAP@0.5 | 94.2% precision | 93.6% recall</p>
+            <div class="chips"><span class="chip">PyTorch</span><span class="chip">YOLOv8</span><span class="chip">OpenCV</span></div>
+            <div class="links"><a href="https://github.com/Jia1267/CS4391_YOLO">Code <i class="ph ph-arrow-up-right"></i></a></div>
+          </div>
+        </article>
+
+        <article class="tile t-uni reveal" style="--i:1">
+          <div class="media"><img src="assets/img/uninest.webp" alt="UniNest 3D map of New York showing a selected student rental building" width="1400" height="972" loading="lazy"></div>
+          <div class="body">
+            <h3>UniNest</h3>
+            <p class="muted">A live student-housing platform for New York. It covers 62 buildings and 507 units, with a 3D city map, nearby places, and budget-based search.</p>
+            <p class="metric">1,000+ visits since launch</p>
+            <div class="chips"><span class="chip">TypeScript</span><span class="chip">Maps</span><span class="chip">Data pipelines</span></div>
+            <div class="links"><a href="https://uninestny.com">Live site <i class="ph ph-arrow-up-right"></i></a></div>
+          </div>
+        </article>
+
+        <article class="tile t-rnn reveal">
+          <div class="media"><img src="assets/img/rnn-prediction.webp" alt="Chart of predicted versus actual stock closing prices" width="1000" height="500" loading="lazy"></div>
+          <div class="body">
+            <h3>RNN & LSTM Forecasting</h3>
+            <p class="muted">A from-scratch NumPy RNN and a hand-built PyTorch LSTM for next-day price prediction. Team project.</p>
+            <p class="metric">RNN test RMSE 393.6</p>
+            <div class="links"><a href="https://github.com/Jia1267/CS4375-RNN-LSTM-Stock-Prediction">Code <i class="ph ph-arrow-up-right"></i></a></div>
+          </div>
+        </article>
+
+        <article class="tile t-game reveal" style="--i:1">
+          <div class="body">
+            <i class="ph ph-game-controller icon" aria-hidden="true"></i>
+            <h3>Office Worker Rush</h3>
+            <p class="muted">A three-lane endless runner built as a WeChat Mini Game on the raw Canvas API.</p>
+            <div class="chips"><span class="chip">JavaScript</span><span class="chip">Canvas</span></div>
+            <div class="links"><a href="https://github.com/Jia1267/WechaRun">Code <i class="ph ph-arrow-up-right"></i></a></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="research">
+    <div class="wrap">
+      <h2 class="reveal">Research</h2>
+      <div class="research-item reveal">
+        <div>
+          <p class="big-num">97.8%</p>
+          <p class="caption muted">GMM clustering accuracy with 10-fold evaluation</p>
+        </div>
+        <div>
+          <h3>Transfer Learning & Explainable AI for ECG</h3>
+          <p class="where mono muted">The University of Texas at Dallas | Jan 2026 - Aug 2026</p>
+          <ul>
+            <li>Benchmarked K-Means, GMM, PCA-based clustering, and Birch on the ECG5000 dataset.</li>
+            <li>Built unsupervised-to-supervised transfer features and an LLM explanation layer grounded in a normal reference of 2,079 ECG samples.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="research-item reveal">
+        <div>
+          <p class="big-num">ICLR</p>
+          <p class="caption muted">2024 Hyper Evidential Deep Learning project</p>
+        </div>
+        <div>
+          <h3>Uncertainty-Aware Deep Learning</h3>
+          <p class="where mono muted">AI Safety Lab, UT Dallas | Sep 2023 - Jan 2024</p>
+          <ul>
+            <li>Curated and annotated 500+ images across 20 object categories for uncertainty-aware classification experiments.</li>
+            <li>Reviewed ambiguous samples and data quality to strengthen experimental evaluation.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="wrap">
+      <h2 class="reveal">Experience</h2>
+      <div class="xp">
+        <p class="when mono reveal">May 2026 - Aug 2026</p>
+        <div class="what reveal">
+          <h3>Data Center Operations Intern</h3>
+          <p class="org muted">Database Mart, Dallas</p>
+          <ul>
+            <li>Raised daily server assembly and testing throughput by 150%, from about 10 to 25 servers, by standardizing preparation and validation.</li>
+            <li>Deployed and validated 100+ servers across Windows, Linux, RAID, BIOS, BMC/IPMI, and networking.</li>
+            <li>Automated IP and IPMI lookups with PowerShell and wrote 5 SOP documents.</li>
+          </ul>
+        </div>
+        <p class="when mono reveal">Jan 2024 - Jan 2025</p>
+        <div class="what reveal">
+          <h3>Web Developer</h3>
+          <p class="org muted">U.S. Chinese Immigrants Center, Remote</p>
+          <ul>
+            <li>Built and deployed the organization's production website on WordPress and AWS (EC2, RDS, S3).</li>
+            <li>Maintained the site, backend services, and infrastructure for 12 months.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="education">
+    <div class="wrap">
+      <div class="edu-grid">
+        <div class="panel reveal">
+          <h3>Education</h3>
+          <div class="school">
+            <strong>Columbia University</strong>
+            <p class="muted">M.S. in Artificial Intelligence, Robotics</p>
+            <p class="mono muted">Sep 2026 - Dec 2027</p>
+          </div>
+          <div class="school">
+            <strong>The University of Texas at Dallas</strong>
+            <p class="muted">B.S. in Computer Science, GPA 3.45</p>
+            <p class="mono muted">Aug 2023 - May 2026</p>
+          </div>
+        </div>
+        <div class="panel reveal" style="--i:1">
+          <h3>Skills</h3>
+          <div class="skill-group">
+            <p>Languages</p>
+            <div class="chips"><span class="chip">Python</span><span class="chip">C++</span><span class="chip">Java</span><span class="chip">JavaScript</span><span class="chip">SQL</span></div>
+          </div>
+          <div class="skill-group">
+            <p>Machine learning & vision</p>
+            <div class="chips"><span class="chip">PyTorch</span><span class="chip">scikit-learn</span><span class="chip">OpenCV</span><span class="chip">YOLO</span><span class="chip">NumPy</span><span class="chip">pandas</span></div>
+          </div>
+          <div class="skill-group">
+            <p>Systems & tools</p>
+            <div class="chips"><span class="chip">Linux</span><span class="chip">AWS</span><span class="chip">FastAPI</span><span class="chip">Git</span><span class="chip">MySQL</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <h2 class="reveal">Open to AI/ML, software engineering, and robotics roles.</h2>
+      <a class="email reveal" href="mailto:jg5195@columbia.edu">jg5195@columbia.edu</a>
+      <div class="actions reveal">
+        <a class="btn btn-ghost" href="https://github.com/Jia1267"><i class="ph ph-github-logo"></i> GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">© 2026 Jia Guo | <a href="./">Interactive version</a></div>
+</footer>
+
+<script>
+  // Reveal sections once as they enter the viewport. No scroll listeners.
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) { els.forEach(function (el) { el.classList.add('in'); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+</body>
+</html>

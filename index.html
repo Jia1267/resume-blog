@@ -3,223 +3,313 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jia Guo | AI, Computer Vision & Software Engineering</title>
+<title>Jia Guo | AI, Computer Vision & Robotics</title>
 <meta name="description" content="Jia Guo is an M.S. in Artificial Intelligence (Robotics) student at Columbia University building machine learning, computer vision, and software systems.">
 <link rel="canonical" href="https://jia1267.github.io/resume-blog/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Jia Guo | AI, Computer Vision & Software Engineering">
-<meta property="og:description" content="M.S. in AI (Robotics) at Columbia University. Projects in computer vision, machine learning, and full-stack software.">
+<meta property="og:title" content="Jia Guo | AI, Computer Vision & Robotics">
+<meta property="og:description" content="Interactive portfolio of Jia Guo, M.S. in AI (Robotics) at Columbia University.">
 <meta property="og:url" content="https://jia1267.github.io/resume-blog/">
 <meta property="og:image" content="https://jia1267.github.io/resume-blog/assets/img/uninest.webp">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0e1116" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#07090d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1"></script>
 <style>
-  /* Tokens. Shape rule: buttons and chips are full-pill, cards and media are 16px, nothing else is rounded. */
+  /* Dark-only by design: the particle field and audio-reactive visuals need a night canvas. */
+  /* Shape rule: buttons and chips are full-pill, cards are 18px. One accent: signal blue. */
   :root {
-    --bg: #f6f7f9;
-    --surface: #ffffff;
-    --surface-2: #eef1f5;
-    --text: #151a22;
-    --muted: #525c6b;
-    --line: #dde2e9;
-    --accent: #2a5595;
-    --accent-ink: #ffffff;
-    --accent-soft: #e3ebf7;
-    --shadow: 0 1px 2px rgb(21 40 70 / .06), 0 8px 24px rgb(21 40 70 / .06);
-    --radius: 16px;
+    --bg: #07090d;
+    --bg-2: #0c1017;
+    --glass: rgb(16 21 30 / .62);
+    --line: rgb(160 190 230 / .14);
+    --line-strong: rgb(160 190 230 / .28);
+    --text: #eef2f7;
+    --muted: #9aa6b6;
+    --accent: #7cc4ff;
+    --accent-ink: #06121f;
+    --radius: 18px;
     --font: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --mono: "Geist Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+    --ease: cubic-bezier(.16, 1, .3, 1);
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0e1116;
-      --surface: #151a22;
-      --surface-2: #1b2230;
-      --text: #e8ecf2;
-      --muted: #a2acba;
-      --line: #273042;
-      --accent: #8fb3e6;
-      --accent-ink: #0e1116;
-      --accent-soft: #1c2b42;
-      --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px rgb(0 0 0 / .25);
-    }
-  }
-
   *, *::before, *::after { box-sizing: border-box; }
-  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  html { scroll-behavior: smooth; }
   body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font);
-    font-size: 16px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--font); line-height: 1.6; -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
+  body.locked { overflow: hidden; }
   img { max-width: 100%; display: block; }
   a { color: inherit; }
-  .wrap { max-width: 1160px; margin: 0 auto; padding-inline: 24px; }
-  section { padding-block: 88px; }
-  h1, h2, h3 { margin: 0; letter-spacing: -0.02em; line-height: 1.15; }
-  h2 { font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 600; margin-bottom: 36px; }
-  h3 { font-size: 1.2rem; font-weight: 600; }
+  h1, h2, h3 { margin: 0; letter-spacing: -0.025em; line-height: 1.1; }
   p { margin: 0; }
+  .mono { font-family: var(--mono); }
   .muted { color: var(--muted); }
-  .mono { font-family: var(--mono); font-size: .875rem; }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 24px; }
 
-  /* Nav */
-  .nav {
-    position: sticky; top: 0; z-index: 10;
-    background: color-mix(in srgb, var(--bg) 85%, transparent);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--line);
+  /* Particle canvas sits behind everything */
+  #field { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+  main, header.nav, footer { position: relative; z-index: 2; }
+  .grain { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .06;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  /* Boot screen */
+  #boot {
+    position: fixed; inset: 0; z-index: 50; background: var(--bg);
+    display: grid; place-items: center; padding: 24px;
+    transition: opacity .9s var(--ease), visibility .9s;
   }
-  .nav .wrap { height: 64px; display: flex; align-items: center; gap: 28px; }
-  .brand { font-weight: 600; text-decoration: none; margin-right: auto; }
-  .nav-links { display: flex; gap: 24px; }
-  .nav-links a, .nav-icons a { text-decoration: none; color: var(--muted); font-size: .95rem; transition: color .2s; }
-  .nav-links a:hover, .nav-icons a:hover { color: var(--text); }
-  .nav-icons { display: flex; gap: 14px; font-size: 1.25rem; }
-  @media (max-width: 720px) { .nav-links { display: none; } }
+  #boot.gone { opacity: 0; visibility: hidden; }
+  .boot-box { width: min(520px, 100%); }
+  .boot-lines { font-family: var(--mono); font-size: .9rem; color: var(--muted); min-height: 7.5em; }
+  .boot-lines div { opacity: 0; transform: translateY(4px); transition: opacity .35s, transform .35s; }
+  .boot-lines div.on { opacity: 1; transform: none; }
+  .boot-lines .ok { color: var(--accent); }
+  .boot-bar { height: 2px; background: var(--line); margin: 20px 0 12px; overflow: hidden; border-radius: 2px; }
+  .boot-bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .15s linear; }
+  .boot-pct { font-family: var(--mono); font-size: .8rem; color: var(--muted); display: flex; justify-content: space-between; }
+  .boot-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; opacity: 0; pointer-events: none; transition: opacity .6s var(--ease); }
+  .boot-actions.on { opacity: 1; pointer-events: auto; }
+  .boot-hint { margin-top: 16px; font-size: .85rem; color: var(--muted); }
 
   /* Buttons */
   .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 12px 22px; border-radius: 999px;
-    font-weight: 500; text-decoration: none; white-space: nowrap;
-    transition: transform .2s cubic-bezier(.16,1,.3,1), background-color .2s, border-color .2s;
+    display: inline-flex; align-items: center; gap: 10px; padding: 13px 24px; border-radius: 999px;
+    font: 500 1rem var(--font); text-decoration: none; white-space: nowrap; cursor: pointer; border: 0;
+    transition: background-color .25s, border-color .25s, color .25s; will-change: transform;
   }
-  .btn:active { transform: translateY(1px) scale(.98); }
   .btn-primary { background: var(--accent); color: var(--accent-ink); }
-  .btn-primary:hover { background: color-mix(in srgb, var(--accent) 88%, var(--text)); }
-  .btn-ghost { border: 1px solid var(--line); color: var(--text); background: var(--surface); }
+  .btn-primary:hover { background: #a6d7ff; }
+  .btn-ghost { background: rgb(255 255 255 / .04); color: var(--text); border: 1px solid var(--line-strong); }
   .btn-ghost:hover { border-color: var(--accent); }
+  .btn:active { scale: .98; }
+  [data-magnetic] { display: inline-block; }
+  .btn[data-magnetic] { display: inline-flex; }
 
-  /* Hero: asymmetric split */
-  .hero { padding-block: 72px 88px; }
-  .hero .wrap { display: grid; grid-template-columns: 1.35fr 1fr; gap: 64px; align-items: center; }
-  .hero h1 { font-size: clamp(2.75rem, 6vw, 4.25rem); font-weight: 700; letter-spacing: -0.035em; }
-  .hero .lead { font-size: 1.25rem; color: var(--muted); max-width: 34ch; margin-top: 20px; line-height: 1.5; }
-  .hero .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
-  .portrait {
-    border-radius: var(--radius); overflow: hidden; aspect-ratio: 4 / 5;
-    background: var(--surface-2); box-shadow: var(--shadow); max-width: 380px; justify-self: end; width: 100%;
-  }
-  .portrait img { width: 100%; height: 100%; object-fit: cover; }
-  @media (max-width: 860px) {
-    .hero .wrap { grid-template-columns: 1fr; gap: 40px; }
-    .portrait { justify-self: start; max-width: 280px; }
+  /* Nav */
+  .nav { position: fixed !important; top: 0; left: 0; right: 0; z-index: 20 !important; background: linear-gradient(rgb(7 9 13 / .82), rgb(7 9 13 / .55)); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .nav .wrap { height: 68px; display: flex; align-items: center; gap: 28px; }
+  .brand { font-weight: 600; text-decoration: none; margin-right: auto; font-family: var(--mono); font-size: .95rem; }
+  .brand b { color: var(--accent); font-weight: 500; }
+  .nav-links { display: flex; gap: 26px; }
+  .nav-links a { text-decoration: none; color: var(--muted); font-size: .95rem; transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-icons { display: flex; gap: 16px; font-size: 1.25rem; }
+  .nav-icons a { color: var(--muted); text-decoration: none; }
+  .nav-icons a:hover { color: var(--text); }
+  @media (max-width: 760px) { .nav-links { display: none; } }
+
+  /* Hero */
+  .hero { min-height: 100dvh; display: flex; align-items: flex-end; padding-block: 120px 128px; }
+  .hero .wrap { width: 100%; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 32px; }
+  .hero h1.fallback-name { display: none; font-size: clamp(3rem, 10vw, 7rem); font-weight: 800; }
+  .no-webgl .hero h1.fallback-name { display: block; margin-bottom: 24px; }
+  .role { font-size: clamp(1.4rem, 3.2vw, 2.2rem); font-weight: 600; letter-spacing: -0.02em; min-height: 1.3em; }
+  .role .acc { color: var(--accent); }
+  .hero .lead { color: var(--muted); max-width: 44ch; margin-top: 12px; font-size: 1.05rem; }
+  .hero .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .hint { font-family: var(--mono); font-size: .8rem; color: var(--muted); text-align: right; line-height: 1.8; }
+  .hint kbd { font-family: var(--mono); border: 1px solid var(--line-strong); border-radius: 6px; padding: 1px 7px; color: var(--text); }
+  @media (max-width: 760px) { .hero .wrap { grid-template-columns: 1fr; } .hint { display: none; } }
+
+  section { padding-block: 110px; }
+  .sec-head { margin-bottom: 44px; }
+  .sec-head h2 { font-size: clamp(2rem, 4.2vw, 3.2rem); font-weight: 700; }
+  .sec-head p { color: var(--muted); margin-top: 12px; max-width: 56ch; }
+
+  /* Glass cards */
+  .glass {
+    background: var(--glass); border: 1px solid var(--line); border-radius: var(--radius);
+    backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .05);
   }
 
-  /* Projects: bento with exactly four cells */
-  .bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
-  .tile {
-    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-    overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow);
-    transition: transform .35s cubic-bezier(.16,1,.3,1), border-color .25s;
+  /* Projects bento: 4 items, 4 cells */
+  .bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 22px; }
+  .card {
+    position: relative; overflow: hidden; display: flex; flex-direction: column;
+    transform-style: preserve-3d; transition: transform .5s var(--ease), border-color .3s;
+    --mx: 50%; --my: 50%;
   }
-  .tile:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
-  .tile .media { background: var(--surface-2); overflow: hidden; }
-  .tile .media img { width: 100%; height: 100%; object-fit: cover; }
-  .tile .body { padding: 24px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
-  .tile .metric { font-family: var(--mono); font-size: .9rem; color: var(--accent); }
-  .tile .links { display: flex; gap: 18px; margin-top: auto; padding-top: 8px; }
-  .tile .links a { text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
-  .tile .links a:hover { color: var(--accent); }
+  .card::after { /* cursor spotlight */
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
+    background: radial-gradient(420px circle at var(--mx) var(--my), rgb(124 196 255 / .13), transparent 60%);
+  }
+  .card:hover { border-color: var(--line-strong); }
+  .card:hover::after { opacity: 1; }
+  .card .media { position: relative; overflow: hidden; background: var(--bg-2); }
+  .card .media img { width: 100%; height: 100%; object-fit: cover; transition: scale .8s var(--ease); }
+  .card:hover .media img { scale: 1.04; }
+  .card .body { padding: 26px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+  .card h3 { font-size: 1.3rem; font-weight: 600; }
+  .metric { font-family: var(--mono); font-size: .88rem; color: var(--accent); }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip { font-family: var(--mono); font-size: .78rem; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
-  .t-yolo { grid-column: span 7; }
-  .t-yolo .media { aspect-ratio: 16 / 9; }
-  .t-uni { grid-column: span 5; grid-row: span 2; }
-  .t-uni .media { aspect-ratio: 4 / 3.4; }
-  .t-rnn { grid-column: span 4; }
-  .t-rnn .media { aspect-ratio: 2 / 1; background: #fff; }
-  .t-rnn .media img { object-fit: contain; }
-  .t-game { grid-column: span 3; background: var(--accent-soft); border-color: transparent; }
-  .t-game .body { justify-content: flex-start; }
-  .t-game .icon { font-size: 2.25rem; color: var(--accent); }
-  @media (max-width: 960px) {
-    .t-yolo, .t-uni { grid-column: span 12; grid-row: auto; }
-    .t-rnn, .t-game { grid-column: span 6; }
+  .chip { font-family: var(--mono); font-size: .76rem; padding: 4px 11px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .card .links { margin-top: auto; padding-top: 6px; display: flex; gap: 18px; }
+  .card .links a { text-decoration: none; font-weight: 500; display: inline-flex; gap: 6px; align-items: center; }
+  .card .links a:hover { color: var(--accent); }
+
+  /* Detection box overlay: a nod to computer vision */
+  .det { position: absolute; inset: 14px; pointer-events: none; opacity: 0; transition: opacity .25s, inset .45s var(--ease); z-index: 3; }
+  .det::before, .det::after, .det i::before, .det i::after {
+    content: ""; position: absolute; width: 18px; height: 18px; border-color: var(--accent); border-style: solid;
   }
-  @media (max-width: 640px) {
-    .t-rnn, .t-game { grid-column: span 12; }
+  .det::before { top: 0; left: 0; border-width: 2px 0 0 2px; }
+  .det::after { top: 0; right: 0; border-width: 2px 2px 0 0; }
+  .det i::before { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+  .det i::after { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+  .det span {
+    position: absolute; top: 0; left: 0;
+    font: 500 .72rem var(--mono); background: var(--accent); color: var(--accent-ink); padding: 3px 9px; border-radius: 0 0 6px 0;
   }
+  .card:hover .det { opacity: 1; inset: 8px; }
 
-  /* Research: metric-led stack */
-  .research-item { display: grid; grid-template-columns: 220px 1fr; gap: 40px; padding-block: 32px; }
-  .research-item + .research-item { border-top: 1px solid var(--line); }
-  .big-num { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 700; letter-spacing: -0.03em; color: var(--accent); line-height: 1; }
-  .research-item .caption { margin-top: 10px; font-size: .9rem; }
-  .research-item h3 { margin-bottom: 6px; }
-  .research-item .where { margin-bottom: 14px; }
-  .research-item ul { margin: 0; padding-left: 1.1em; color: var(--muted); max-width: 70ch; }
-  .research-item li + li { margin-top: 6px; }
-  @media (max-width: 720px) { .research-item { grid-template-columns: 1fr; gap: 16px; } }
+  .c-yolo { grid-column: span 7; }
+  .c-yolo .media { aspect-ratio: 16 / 9; }
+  .c-uni { grid-column: span 5; grid-row: span 2; }
+  .c-uni .media { aspect-ratio: 4 / 3.3; }
+  .c-rnn { grid-column: span 4; }
+  .c-rnn .media { aspect-ratio: 2 / 1; background: #fff; }
+  .c-rnn .media img { object-fit: contain; }
+  .c-game { grid-column: span 3; background: linear-gradient(160deg, rgb(124 196 255 / .16), rgb(16 21 30 / .62) 70%); }
+  .c-game .big-icon { font-size: 2.6rem; color: var(--accent); }
+  @media (max-width: 980px) { .c-yolo, .c-uni { grid-column: span 12; grid-row: auto; } .c-rnn, .c-game { grid-column: span 6; } }
+  @media (max-width: 640px) { .c-rnn, .c-game { grid-column: span 12; } }
 
-  /* Experience: timeline columns */
-  .xp { display: grid; grid-template-columns: 200px 1fr; gap: 0 40px; }
-  .xp .when { padding-top: 4px; color: var(--muted); }
-  .xp .what { padding-bottom: 40px; border-left: 2px solid var(--line); padding-left: 32px; position: relative; }
-  .xp .what::before { content: ""; position: absolute; left: -7px; top: 8px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
-  .xp .what:last-child { padding-bottom: 0; }
-  .xp .org { margin: 4px 0 12px; }
-  .xp ul { margin: 0; padding-left: 1.1em; color: var(--muted); max-width: 70ch; }
-  .xp li + li { margin-top: 6px; }
-  @media (max-width: 720px) {
-    .xp { grid-template-columns: 1fr; }
-    .xp .when { padding-left: 34px; }
+  /* Research: stat-led */
+  .research { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .stat-card { padding: 34px; }
+  .stat { font-size: clamp(3rem, 7vw, 5rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .stat-label { font-family: var(--mono); font-size: .82rem; color: var(--muted); margin: 10px 0 26px; }
+  .stat-card h3 { font-size: 1.25rem; margin-bottom: 6px; }
+  .stat-card .where { font-family: var(--mono); font-size: .82rem; color: var(--muted); margin-bottom: 14px; }
+  .stat-card ul { margin: 0; padding-left: 1.1em; color: var(--muted); }
+  .stat-card li + li { margin-top: 6px; }
+  @media (max-width: 860px) { .research { grid-template-columns: 1fr; } }
+
+  /* Experience: timeline */
+  .timeline { position: relative; padding-left: 36px; }
+  .timeline::before { content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--accent), transparent); opacity: .5; }
+  .t-item { position: relative; padding: 28px 30px; margin-bottom: 22px; }
+  .t-item::before { content: ""; position: absolute; left: -35px; top: 34px; width: 14px; height: 14px; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent); box-shadow: 0 0 0 5px rgb(124 196 255 / .12); }
+  .t-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 20px; align-items: baseline; }
+  .t-item h3 { font-size: 1.2rem; }
+  .t-when { font-family: var(--mono); font-size: .82rem; color: var(--muted); }
+  .t-org { color: var(--muted); margin: 4px 0 12px; }
+  .t-item ul { margin: 0; padding-left: 1.1em; color: var(--muted); }
+  .t-item li + li { margin-top: 6px; }
+
+  /* Skills marquee (the only marquee on the page) */
+  .marquee { overflow: hidden; border-block: 1px solid var(--line); padding-block: 26px; mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+  .marquee-track { display: flex; gap: 48px; width: max-content; animation: slide 38s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  .marquee span { font-size: clamp(1.4rem, 3vw, 2.2rem); font-weight: 600; color: var(--muted); white-space: nowrap; transition: color .2s; }
+  .marquee span:hover { color: var(--text); }
+  .marquee span.acc { color: var(--accent); }
+  @keyframes slide { to { transform: translateX(-50%); } }
+
+  .edu { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 56px; }
+  .edu .glass { padding: 30px; }
+  .edu strong { display: block; font-size: 1.15rem; font-weight: 600; }
+  .edu .deg { color: var(--muted); margin-top: 4px; }
+  .edu .when { font-family: var(--mono); font-size: .82rem; color: var(--muted); margin-top: 10px; }
+  @media (max-width: 760px) { .edu { grid-template-columns: 1fr; } }
+
+  /* Contact */
+  .contact { text-align: left; padding-block: 140px 90px; }
+  .contact h2 { font-size: clamp(2.2rem, 6vw, 4.6rem); font-weight: 800; letter-spacing: -0.04em; max-width: 16ch; }
+  .contact .email { display: inline-block; margin-top: 28px; font-size: clamp(1.3rem, 3.4vw, 2.2rem); color: var(--accent); text-decoration: none; font-weight: 500; }
+  .contact .email:hover { text-decoration: underline; text-underline-offset: 8px; }
+  .contact .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+  footer { padding-block: 30px 120px; color: var(--muted); font-size: .9rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; }
+  footer a { color: var(--muted); }
+  footer a:hover { color: var(--text); }
+
+  /* Music player */
+  .player {
+    position: fixed; left: 20px; bottom: 20px; z-index: 30; display: flex; align-items: center; gap: 14px;
+    padding: 10px 18px 10px 10px; border-radius: 999px; opacity: 0; translate: 0 20px;
+    transition: opacity .6s var(--ease), translate .6s var(--ease);
   }
-
-  /* Education and skills: two panels */
-  .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 32px; }
-  .panel h3 { margin-bottom: 24px; }
-  .school + .school { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line); }
-  .school strong { display: block; font-weight: 600; }
-  .skill-group + .skill-group { margin-top: 20px; }
-  .skill-group p { font-weight: 500; margin-bottom: 10px; }
-  @media (max-width: 860px) { .edu-grid { grid-template-columns: 1fr; } }
-
-  /* Contact band */
-  .contact { background: var(--surface); border-top: 1px solid var(--line); }
-  .contact h2 { max-width: 30ch; margin-bottom: 20px; }
-  .contact .email { font-size: clamp(1.25rem, 3vw, 1.75rem); font-weight: 500; color: var(--accent); text-decoration: none; }
-  .contact .email:hover { text-decoration: underline; text-underline-offset: 6px; }
-  .contact .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
-  footer { padding-block: 32px; color: var(--muted); font-size: .9rem; }
-
-  /* Reveal motion: communicates reading order as sections enter */
-  @media (prefers-reduced-motion: no-preference) {
-    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); transition-delay: calc(var(--i, 0) * 70ms); }
-    .reveal.in { opacity: 1; transform: none; }
+  .player.on { opacity: 1; translate: 0 0; }
+  .disc {
+    width: 46px; height: 46px; border-radius: 50%; flex: none; position: relative; border: 0; cursor: pointer; padding: 0;
+    background:
+      radial-gradient(circle, var(--accent) 0 5px, #0b0f16 6px 8px, transparent 9px),
+      repeating-radial-gradient(circle, #1a2230 0 1px, #0e131b 2px 3px);
+    box-shadow: 0 0 0 1px var(--line-strong), 0 6px 20px rgb(0 0 0 / .5);
+    animation: spin 3.2s linear infinite; animation-play-state: paused;
   }
+  .disc::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 20deg, transparent 0 20%, rgb(255 255 255 / .12) 25%, transparent 32% 70%, rgb(255 255 255 / .08) 76%, transparent 82%); }
+  .player.playing .disc { animation-play-state: running; }
+  .disc .ic { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-size: 1rem; z-index: 2; opacity: 0; transition: opacity .2s; background: rgb(0 0 0 / .45); border-radius: 50%; }
+  .disc:hover .ic, .disc:focus-visible .ic { opacity: 1; }
+  @keyframes spin { to { rotate: 360deg; } }
+  .track { line-height: 1.25; }
+  .track b { display: block; font-size: .88rem; font-weight: 600; }
+  .track small { font-family: var(--mono); font-size: .7rem; color: var(--muted); }
+  .eq { display: flex; gap: 3px; align-items: flex-end; height: 22px; }
+  .eq i { width: 3px; height: 4px; background: var(--accent); border-radius: 2px; transition: height .08s linear; }
+  @media (max-width: 520px) { .track small { display: none; } }
+
+  /* Custom cursor (fine pointers only) */
+  .cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; z-index: 60; pointer-events: none; border-radius: 50%; opacity: 0; }
+  .cursor-dot { width: 6px; height: 6px; background: var(--accent); margin: -3px 0 0 -3px; }
+  .cursor-ring { width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1px solid rgb(124 196 255 / .55); transition: width .3s var(--ease), height .3s var(--ease), margin .3s var(--ease), background-color .3s; }
+  .cursor-ring.big { width: 72px; height: 72px; margin: -36px 0 0 -36px; background: rgb(124 196 255 / .08); }
+  .has-cursor .cursor-dot, .has-cursor .cursor-ring { opacity: 1; }
+
+  /* Reveal */
+  .reveal { opacity: 0; translate: 0 26px; transition: opacity .9s var(--ease), translate .9s var(--ease); transition-delay: calc(var(--i, 0) * 80ms); }
+  .reveal.in { opacity: 1; translate: 0 0; }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .tile, .btn { transition: none; }
-    .tile:hover { transform: none; }
+    .reveal { opacity: 1; translate: none; transition: none; }
+    .marquee-track { animation: none; flex-wrap: wrap; width: auto; }
+    .disc { animation: none; }
+    .card, .card .media img { transition: none; }
   }
 </style>
 </head>
-<body>
+<body class="locked">
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" aria-hidden="true"></div>
+
+<div id="boot" role="dialog" aria-label="Welcome">
+  <div class="boot-box">
+    <div class="boot-lines" id="bootLines"></div>
+    <div class="boot-bar"><i id="bootBar"></i></div>
+    <div class="boot-pct"><span>jia-guo.portfolio</span><span id="bootPct">0%</span></div>
+    <div class="boot-actions" id="bootActions">
+      <button class="btn btn-primary" id="enterSound"><i class="ph ph-speaker-high"></i> Enter with sound</button>
+      <button class="btn btn-ghost" id="enterQuiet">Enter quietly</button>
+    </div>
+    <p class="boot-hint" id="bootHint" hidden>Headphones recommended. Press <span class="mono">M</span> anytime to toggle music.</p>
+  </div>
+</div>
+<noscript><style>#boot{display:none} body.locked{overflow:auto} .reveal{opacity:1;translate:none}</style></noscript>
 
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="#top">Jia Guo</a>
+    <a class="brand" href="#top">jia<b>.</b>guo</a>
     <nav class="nav-links" aria-label="Sections">
-      <a href="#projects">Projects</a>
-      <a href="#research">Research</a>
-      <a href="#experience">Experience</a>
-      <a href="#contact">Contact</a>
+      <a href="#projects" data-magnetic>Projects</a>
+      <a href="#research" data-magnetic>Research</a>
+      <a href="#experience" data-magnetic>Experience</a>
+      <a href="#contact" data-magnetic>Contact</a>
     </nav>
     <div class="nav-icons">
-      <a href="https://github.com/Jia1267" aria-label="GitHub"><i class="ph ph-github-logo"></i></a>
-      <a href="https://www.linkedin.com/in/jia-guo-ai" aria-label="LinkedIn"><i class="ph ph-linkedin-logo"></i></a>
+      <a href="https://github.com/Jia1267" aria-label="GitHub" data-magnetic><i class="ph ph-github-logo"></i></a>
+      <a href="https://www.linkedin.com/in/jia-guo-ai" aria-label="LinkedIn" data-magnetic><i class="ph ph-linkedin-logo"></i></a>
     </div>
   </div>
 </header>
@@ -228,24 +318,28 @@
   <section class="hero">
     <div class="wrap">
       <div>
-        <h1 class="reveal">Jia Guo</h1>
-        <p class="lead reveal" style="--i:1">M.S. in Artificial Intelligence (Robotics) at Columbia. I build machine learning, computer vision, and software systems.</p>
+        <h1 class="fallback-name">Jia Guo</h1>
+        <span class="sr-only">Jia Guo</span>
+        <p class="role reveal"><span class="acc">&gt;</span> <span id="role">Machine learning</span></p>
+        <p class="lead reveal" style="--i:1">M.S. in Artificial Intelligence (Robotics) at Columbia. I build perception, learning, and software systems.</p>
         <div class="actions reveal" style="--i:2">
-          <a class="btn btn-primary" href="#projects">View projects</a>
-          <a class="btn btn-ghost" href="https://www.linkedin.com/in/jia-guo-ai"><i class="ph ph-linkedin-logo"></i> LinkedIn</a>
+          <a class="btn btn-primary" href="#projects" data-magnetic>View projects</a>
+          <a class="btn btn-ghost" href="#contact" data-magnetic>Contact</a>
         </div>
       </div>
-      <div class="portrait reveal" style="--i:2">
-        <img src="assets/img/jia-guo.webp" alt="Portrait of Jia Guo" width="460" height="460" fetchpriority="high">
-      </div>
+      <p class="hint reveal" style="--i:3">move your cursor through the point cloud<br>scroll to reshape it · <kbd>M</kbd> music</p>
     </div>
   </section>
 
   <section id="projects">
     <div class="wrap">
-      <h2 class="reveal">Selected projects</h2>
+      <div class="sec-head reveal">
+        <h2 data-scramble>Selected projects</h2>
+        <p>Computer vision, sequence models, and products people actually use.</p>
+      </div>
       <div class="bento">
-        <article class="tile t-yolo reveal">
+        <article class="card glass c-yolo reveal" data-tilt>
+          <div class="det"><i></i><span>project: yolo 0.96</span></div>
           <div class="media"><img src="assets/img/yolo-detect.webp" alt="YOLOv8 model detecting a computer mouse with 0.97 confidence" width="1200" height="675" loading="lazy"></div>
           <div class="body">
             <h3>Real-Time Object Detection & Tracking</h3>
@@ -256,7 +350,8 @@
           </div>
         </article>
 
-        <article class="tile t-uni reveal" style="--i:1">
+        <article class="card glass c-uni reveal" style="--i:1" data-tilt>
+          <div class="det"><i></i><span>project: uninest 0.99</span></div>
           <div class="media"><img src="assets/img/uninest.webp" alt="UniNest 3D map of New York showing a selected student rental building" width="1400" height="972" loading="lazy"></div>
           <div class="body">
             <h3>UniNest</h3>
@@ -267,7 +362,8 @@
           </div>
         </article>
 
-        <article class="tile t-rnn reveal">
+        <article class="card glass c-rnn reveal" data-tilt>
+          <div class="det"><i></i><span>project: forecast 0.93</span></div>
           <div class="media"><img src="assets/img/rnn-prediction.webp" alt="Chart of predicted versus actual stock closing prices" width="1000" height="500" loading="lazy"></div>
           <div class="body">
             <h3>RNN & LSTM Forecasting</h3>
@@ -277,9 +373,10 @@
           </div>
         </article>
 
-        <article class="tile t-game reveal" style="--i:1">
+        <article class="card glass c-game reveal" style="--i:1" data-tilt>
+          <div class="det"><i></i><span>project: game 0.91</span></div>
           <div class="body">
-            <i class="ph ph-game-controller icon" aria-hidden="true"></i>
+            <i class="ph ph-game-controller big-icon" aria-hidden="true"></i>
             <h3>Office Worker Rush</h3>
             <p class="muted">A three-lane endless runner built as a WeChat Mini Game on the raw Canvas API.</p>
             <div class="chips"><span class="chip">JavaScript</span><span class="chip">Canvas</span></div>
@@ -292,32 +389,26 @@
 
   <section id="research">
     <div class="wrap">
-      <h2 class="reveal">Research</h2>
-      <div class="research-item reveal">
-        <div>
-          <p class="big-num">97.8%</p>
-          <p class="caption muted">GMM clustering accuracy with 10-fold evaluation</p>
-        </div>
-        <div>
+      <div class="sec-head reveal"><h2 data-scramble>Research</h2></div>
+      <div class="research">
+        <div class="glass stat-card reveal" data-tilt>
+          <p class="stat" data-count="97.8" data-suffix="%">0%</p>
+          <p class="stat-label">GMM clustering accuracy, 10-fold evaluation</p>
           <h3>Transfer Learning & Explainable AI for ECG</h3>
-          <p class="where mono muted">The University of Texas at Dallas | Jan 2026 - Aug 2026</p>
+          <p class="where">UT Dallas | Jan 2026 - Aug 2026</p>
           <ul>
-            <li>Benchmarked K-Means, GMM, PCA-based clustering, and Birch on the ECG5000 dataset.</li>
-            <li>Built unsupervised-to-supervised transfer features and an LLM explanation layer grounded in a normal reference of 2,079 ECG samples.</li>
+            <li>Benchmarked K-Means, GMM, PCA-based clustering, and Birch on ECG5000.</li>
+            <li>Built transfer features and an LLM explanation layer grounded in 2,079 normal ECG samples.</li>
           </ul>
         </div>
-      </div>
-      <div class="research-item reveal">
-        <div>
-          <p class="big-num">ICLR</p>
-          <p class="caption muted">2024 Hyper Evidential Deep Learning project</p>
-        </div>
-        <div>
+        <div class="glass stat-card reveal" style="--i:1" data-tilt>
+          <p class="stat" data-count="500" data-suffix="+">0</p>
+          <p class="stat-label">images curated for ICLR 2024 research</p>
           <h3>Uncertainty-Aware Deep Learning</h3>
-          <p class="where mono muted">AI Safety Lab, UT Dallas | Sep 2023 - Jan 2024</p>
+          <p class="where">AI Safety Lab, UT Dallas | Sep 2023 - Jan 2024</p>
           <ul>
-            <li>Curated and annotated 500+ images across 20 object categories for uncertainty-aware classification experiments.</li>
-            <li>Reviewed ambiguous samples and data quality to strengthen experimental evaluation.</li>
+            <li>Annotated images across 20 categories for the Hyper Evidential Deep Learning project.</li>
+            <li>Reviewed ambiguous samples and data quality to strengthen evaluation.</li>
           </ul>
         </div>
       </div>
@@ -326,93 +417,486 @@
 
   <section id="experience">
     <div class="wrap">
-      <h2 class="reveal">Experience</h2>
-      <div class="xp">
-        <p class="when mono reveal">May 2026 - Aug 2026</p>
-        <div class="what reveal">
-          <h3>Data Center Operations Intern</h3>
-          <p class="org muted">Database Mart, Dallas</p>
+      <div class="sec-head reveal"><h2 data-scramble>Experience</h2></div>
+      <div class="timeline">
+        <div class="glass t-item reveal">
+          <div class="t-top"><h3>Data Center Operations Intern</h3><span class="t-when">May 2026 - Aug 2026</span></div>
+          <p class="t-org">Database Mart, Dallas</p>
           <ul>
-            <li>Raised daily server assembly and testing throughput by 150%, from about 10 to 25 servers, by standardizing preparation and validation.</li>
+            <li>Raised daily server assembly and testing throughput by 150%, from about 10 to 25 servers.</li>
             <li>Deployed and validated 100+ servers across Windows, Linux, RAID, BIOS, BMC/IPMI, and networking.</li>
             <li>Automated IP and IPMI lookups with PowerShell and wrote 5 SOP documents.</li>
           </ul>
         </div>
-        <p class="when mono reveal">Jan 2024 - Jan 2025</p>
-        <div class="what reveal">
-          <h3>Web Developer</h3>
-          <p class="org muted">U.S. Chinese Immigrants Center, Remote</p>
+        <div class="glass t-item reveal">
+          <div class="t-top"><h3>Web Developer</h3><span class="t-when">Jan 2024 - Jan 2025</span></div>
+          <p class="t-org">U.S. Chinese Immigrants Center, Remote</p>
           <ul>
-            <li>Built and deployed the organization's production website on WordPress and AWS (EC2, RDS, S3).</li>
+            <li>Built and deployed a production website on WordPress and AWS (EC2, RDS, S3).</li>
             <li>Maintained the site, backend services, and infrastructure for 12 months.</li>
           </ul>
         </div>
       </div>
-    </div>
-  </section>
 
-  <section id="education">
-    <div class="wrap">
-      <div class="edu-grid">
-        <div class="panel reveal">
-          <h3>Education</h3>
-          <div class="school">
-            <strong>Columbia University</strong>
-            <p class="muted">M.S. in Artificial Intelligence, Robotics</p>
-            <p class="mono muted">Sep 2026 - Dec 2027</p>
-          </div>
-          <div class="school">
-            <strong>The University of Texas at Dallas</strong>
-            <p class="muted">B.S. in Computer Science, GPA 3.45</p>
-            <p class="mono muted">Aug 2023 - May 2026</p>
-          </div>
+      <div class="edu">
+        <div class="glass reveal">
+          <strong>Columbia University</strong>
+          <p class="deg">M.S. in Artificial Intelligence, Robotics</p>
+          <p class="when">Sep 2026 - Dec 2027</p>
         </div>
-        <div class="panel reveal" style="--i:1">
-          <h3>Skills</h3>
-          <div class="skill-group">
-            <p>Languages</p>
-            <div class="chips"><span class="chip">Python</span><span class="chip">C++</span><span class="chip">Java</span><span class="chip">JavaScript</span><span class="chip">SQL</span></div>
-          </div>
-          <div class="skill-group">
-            <p>Machine learning & vision</p>
-            <div class="chips"><span class="chip">PyTorch</span><span class="chip">scikit-learn</span><span class="chip">OpenCV</span><span class="chip">YOLO</span><span class="chip">NumPy</span><span class="chip">pandas</span></div>
-          </div>
-          <div class="skill-group">
-            <p>Systems & tools</p>
-            <div class="chips"><span class="chip">Linux</span><span class="chip">AWS</span><span class="chip">FastAPI</span><span class="chip">Git</span><span class="chip">MySQL</span></div>
-          </div>
+        <div class="glass reveal" style="--i:1">
+          <strong>The University of Texas at Dallas</strong>
+          <p class="deg">B.S. in Computer Science, GPA 3.45</p>
+          <p class="when">Aug 2023 - May 2026</p>
         </div>
       </div>
     </div>
   </section>
 
+  <div class="marquee" aria-label="Skills">
+    <div class="marquee-track">
+      <span>Python</span><span class="acc">PyTorch</span><span>OpenCV</span><span>YOLO</span><span class="acc">C++</span><span>scikit-learn</span><span>Java</span><span class="acc">TypeScript</span><span>SQL</span><span>FastAPI</span><span class="acc">Linux</span><span>AWS</span><span>Git</span>
+      <span aria-hidden="true">Python</span><span class="acc" aria-hidden="true">PyTorch</span><span aria-hidden="true">OpenCV</span><span aria-hidden="true">YOLO</span><span class="acc" aria-hidden="true">C++</span><span aria-hidden="true">scikit-learn</span><span aria-hidden="true">Java</span><span class="acc" aria-hidden="true">TypeScript</span><span aria-hidden="true">SQL</span><span aria-hidden="true">FastAPI</span><span class="acc" aria-hidden="true">Linux</span><span aria-hidden="true">AWS</span><span aria-hidden="true">Git</span>
+    </div>
+  </div>
+
   <section id="contact" class="contact">
     <div class="wrap">
-      <h2 class="reveal">Open to AI/ML, software engineering, and robotics roles.</h2>
-      <a class="email reveal" href="mailto:jg5195@columbia.edu">jg5195@columbia.edu</a>
+      <h2 class="reveal" data-scramble>Let's build something that sees.</h2>
+      <p class="muted reveal" style="margin-top:18px;max-width:52ch">Open to AI/ML, software engineering, and robotics internships and full-time roles.</p>
+      <a class="email reveal" href="mailto:jg5195@columbia.edu" data-magnetic>jg5195@columbia.edu</a>
       <div class="actions reveal">
-        <a class="btn btn-ghost" href="https://github.com/Jia1267"><i class="ph ph-github-logo"></i> GitHub</a>
+        <a class="btn btn-ghost" href="https://www.linkedin.com/in/jia-guo-ai" data-magnetic><i class="ph ph-linkedin-logo"></i> LinkedIn</a>
+        <a class="btn btn-ghost" href="https://github.com/Jia1267" data-magnetic><i class="ph ph-github-logo"></i> GitHub</a>
       </div>
     </div>
   </section>
 </main>
 
 <footer>
-  <div class="wrap">© 2026 Jia Guo</div>
+  <div class="wrap">
+    <span>© 2026 Jia Guo. Music is generated live in your browser.</span>
+    <a href="classic.html">Classic version</a>
+  </div>
 </footer>
 
+<div class="player glass" id="player">
+  <button class="disc" id="disc" aria-label="Play music"><span class="ic"><i class="ph ph-play" id="discIcon"></i></span></button>
+  <div class="track"><b>Night Signal</b><small>generative ambient</small></div>
+  <div class="eq" id="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+</div>
+
 <script>
-  // Reveal sections once as they enter the viewport. No scroll listeners.
-  (function () {
-    var els = document.querySelectorAll('.reveal');
-    if (!('IntersectionObserver' in window)) { els.forEach(function (el) { el.classList.add('in'); }); return; }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-      });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
-    els.forEach(function (el) { io.observe(el); });
+/* ---------- Generative ambient music (Web Audio, original, no samples) ---------- */
+const Music = (() => {
+  let ctx, master, analyser, dry, reverb, noiseBuf, crackleSrc, timer = null;
+  let playing = false, step = 0, bar = 0, nextTime = 0;
+  const bpm = 78, sixteenth = 60 / bpm / 4;
+  const chords = [[53, 57, 60, 64], [52, 55, 59, 62], [50, 53, 57, 60], [48, 52, 55, 59]]; // Fmaj7 Em7 Dm7 Cmaj7
+  const freq = m => 440 * Math.pow(2, (m - 69) / 12);
+  const data = new Uint8Array(128);
+
+  function impulse(seconds, decay) {
+    const len = ctx.sampleRate * seconds, buf = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = buf.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay); }
+    return buf;
+  }
+  function init() {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    master = ctx.createGain(); master.gain.value = 0;
+    const comp = ctx.createDynamicsCompressor();
+    analyser = ctx.createAnalyser(); analyser.fftSize = 256; analyser.smoothingTimeConstant = .82;
+    master.connect(comp); comp.connect(analyser); analyser.connect(ctx.destination);
+    reverb = ctx.createConvolver(); reverb.buffer = impulse(3.4, 2.4);
+    const wet = ctx.createGain(); wet.gain.value = .42; reverb.connect(wet); wet.connect(master);
+    dry = ctx.createGain(); dry.gain.value = .75; dry.connect(master);
+    noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const nd = noiseBuf.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+  }
+  function pad(notes, t, dur) {
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(700, t); lp.frequency.linearRampToValueAtTime(1300, t + dur / 2); lp.frequency.linearRampToValueAtTime(700, t + dur);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.055, t + 1.2); g.gain.setValueAtTime(.055, t + dur - .4); g.gain.linearRampToValueAtTime(0, t + dur + 1.2);
+    lp.connect(g); g.connect(dry); g.connect(reverb);
+    notes.forEach(n => [-6, 6].forEach(det => {
+      const o = ctx.createOscillator(); o.type = det < 0 ? 'triangle' : 'sawtooth';
+      o.frequency.value = freq(n); o.detune.value = det; o.connect(lp); o.start(t); o.stop(t + dur + 1.4);
+    }));
+  }
+  function pluck(n, t) {
+    const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = freq(n);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.09, t + .01); g.gain.exponentialRampToValueAtTime(.0005, t + .9);
+    o.connect(g); g.connect(reverb); g.connect(dry); o.start(t); o.stop(t + 1);
+  }
+  function kick(t) {
+    const o = ctx.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(42, t + .14);
+    const g = ctx.createGain(); g.gain.setValueAtTime(.55, t); g.gain.exponentialRampToValueAtTime(.001, t + .38);
+    o.connect(g); g.connect(dry); o.start(t); o.stop(t + .4);
+  }
+  function noiseHit(t, type, f, gain, len) {
+    const s = ctx.createBufferSource(); s.buffer = noiseBuf;
+    const fl = ctx.createBiquadFilter(); fl.type = type; fl.frequency.value = f;
+    const g = ctx.createGain(); g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(.0008, t + len);
+    s.connect(fl); fl.connect(g); g.connect(dry); s.start(t, Math.random()); s.stop(t + len + .02);
+  }
+  function schedule() {
+    while (nextTime < ctx.currentTime + .15) {
+      const chord = chords[bar % 4];
+      if (step === 0) pad(chord, nextTime, sixteenth * 16);
+      if (step === 0 || step === 10) kick(nextTime);
+      if (step === 4 || step === 12) noiseHit(nextTime, 'bandpass', 1800, .07, .12);
+      if (step % 4 === 2) noiseHit(nextTime + sixteenth * .12, 'highpass', 7000, .025, .05);
+      if (step % 2 === 0 && Math.random() < .5) {
+        const n = chord[Math.floor(Math.random() * chord.length)] + 12 + (Math.random() < .3 ? 12 : 0);
+        pluck(n, nextTime);
+      }
+      nextTime += sixteenth; step++;
+      if (step === 16) { step = 0; bar++; }
+    }
+  }
+  function startCrackle() {
+    crackleSrc = ctx.createBufferSource(); crackleSrc.buffer = noiseBuf; crackleSrc.loop = true;
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3200; bp.Q.value = .7;
+    const g = ctx.createGain(); g.gain.value = .012;
+    crackleSrc.connect(bp); bp.connect(g); g.connect(master); crackleSrc.start();
+  }
+  return {
+    get playing() { return playing; },
+    async play() {
+      if (!ctx) init();
+      await ctx.resume();
+      if (playing) return;
+      playing = true; step = 0; nextTime = ctx.currentTime + .1;
+      master.gain.cancelScheduledValues(ctx.currentTime);
+      master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+      master.gain.linearRampToValueAtTime(.8, ctx.currentTime + 2);
+      startCrackle();
+      timer = setInterval(schedule, 25); schedule();
+    },
+    pause() {
+      if (!playing) return;
+      playing = false;
+      master.gain.cancelScheduledValues(ctx.currentTime);
+      master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+      master.gain.linearRampToValueAtTime(0, ctx.currentTime + .6);
+      clearInterval(timer);
+      setTimeout(() => { if (!playing) { try { crackleSrc.stop(); } catch (e) {} ctx.suspend(); } }, 800);
+    },
+    level() {
+      if (!analyser || !playing) return 0;
+      analyser.getByteFrequencyData(data);
+      let s = 0; for (let i = 1; i < 8; i++) s += data[i];
+      return s / (7 * 255);
+    },
+    bands(n) {
+      if (!analyser || !playing) return new Array(n).fill(0);
+      analyser.getByteFrequencyData(data);
+      const out = [], span = 40 / n;
+      for (let i = 0; i < n; i++) { let s = 0; for (let j = 0; j < span; j++) s += data[Math.floor(i * span + j) + 1]; out.push(s / (span * 255)); }
+      return out;
+    }
+  };
+})();
+window.Music = Music;
+
+/* ---------- UI: boot, player, reveal, scramble, tilt, magnetic, cursor ---------- */
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(pointer: fine)').matches;
+  const $ = s => document.querySelector(s);
+  const boot = $('#boot'), player = $('#player'), disc = $('#disc'), discIcon = $('#discIcon');
+
+  // Boot sequence
+  const lines = ['> loading perception stack', '> sampling 9,000 lidar points', '> calibrating audio synth', '> ready'];
+  const linesEl = $('#bootLines'), bar = $('#bootBar'), pct = $('#bootPct');
+  lines.forEach((l, i) => { const d = document.createElement('div'); d.textContent = l; if (i === lines.length - 1) d.className = 'ok'; linesEl.appendChild(d); });
+  const total = reduce ? 0 : 1500; const t0 = performance.now();
+  function bootTick(now) {
+    const p = total ? Math.min(1, (now - t0) / total) : 1;
+    bar.style.width = (p * 100) + '%'; pct.textContent = Math.round(p * 100) + '%';
+    [...linesEl.children].forEach((d, i) => { if (p >= i / lines.length) d.classList.add('on'); });
+    if (p < 1) requestAnimationFrame(bootTick);
+    else { $('#bootActions').classList.add('on'); $('#bootHint').hidden = false; $('#enterSound').focus({ preventScroll: true }); }
+  }
+  requestAnimationFrame(bootTick);
+
+  function enter(withSound) {
+    boot.classList.add('gone'); document.body.classList.remove('locked');
+    player.classList.add('on');
+    if (withSound) toggleMusic(true);
+    window.dispatchEvent(new Event('portfolio:enter'));
+    document.querySelectorAll('.hero .reveal').forEach(el => el.classList.add('in'));
+  }
+  $('#enterSound').addEventListener('click', () => enter(true));
+  $('#enterQuiet').addEventListener('click', () => enter(false));
+
+  // Player
+  async function toggleMusic(force) {
+    const on = typeof force === 'boolean' ? force : !Music.playing;
+    if (on) await Music.play(); else Music.pause();
+    player.classList.toggle('playing', on);
+    discIcon.className = on ? 'ph ph-pause' : 'ph ph-play';
+    disc.setAttribute('aria-label', on ? 'Pause music' : 'Play music');
+  }
+  disc.addEventListener('click', () => toggleMusic());
+  addEventListener('keydown', e => {
+    if ((e.key === 'm' || e.key === 'M') && !e.metaKey && !e.ctrlKey && !e.altKey && boot.classList.contains('gone')) toggleMusic();
+  });
+  const eqBars = [...document.querySelectorAll('#eq i')];
+  (function eqLoop() {
+    const b = Music.bands(eqBars.length);
+    eqBars.forEach((el, i) => { el.style.height = (4 + b[i] * 18) + 'px'; });
+    requestAnimationFrame(eqLoop);
   })();
+
+  // Reveal on enter viewport
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target; el.classList.add('in'); io.unobserve(el);
+    if (el.matches('[data-scramble]') || el.querySelector('[data-scramble]')) scramble(el.matches('[data-scramble]') ? el : el.querySelector('[data-scramble]'));
+    el.querySelectorAll('[data-count]').forEach(countUp);
+  }), { threshold: .15, rootMargin: '0px 0px -6% 0px' });
+  document.querySelectorAll('.reveal:not(.hero .reveal)').forEach(el => io.observe(el));
+
+  // Text scramble
+  const glyphs = '!<>-_\\/[]{}=+*^?#01';
+  function scramble(el, text) {
+    const final = text || el.dataset.final || el.textContent; el.dataset.final = final;
+    if (reduce) { el.textContent = final; return; }
+    let frame = 0; const len = final.length, dur = 26;
+    (function run() {
+      let out = '';
+      for (let i = 0; i < len; i++) {
+        const reveal = frame > (i / len) * dur;
+        out += reveal || final[i] === ' ' ? final[i] : glyphs[Math.floor(Math.random() * glyphs.length)];
+      }
+      el.textContent = out; frame++;
+      if (frame <= dur + 2) requestAnimationFrame(run); else el.textContent = final;
+    })();
+  }
+
+  // Rotating role
+  const roles = ['Machine learning', 'Computer vision', 'Robotics', 'Software engineering'];
+  let ri = 0; const roleEl = $('#role');
+  setInterval(() => { if (document.hidden) return; ri = (ri + 1) % roles.length; scramble(roleEl, roles[ri]); }, 2800);
+
+  // Count-up stats
+  function countUp(el) {
+    const target = parseFloat(el.dataset.count), suffix = el.dataset.suffix || '', dec = (el.dataset.count.split('.')[1] || '').length;
+    if (reduce) { el.textContent = target.toFixed(dec) + suffix; return; }
+    const t = performance.now();
+    (function tick(now) {
+      const p = Math.min(1, (now - t) / 1400), v = target * (1 - Math.pow(1 - p, 3));
+      el.textContent = v.toFixed(dec) + suffix; if (p < 1) requestAnimationFrame(tick);
+    })(t);
+  }
+
+  if (reduce || !fine) return;
+
+  // Tilt + spotlight
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    card.addEventListener('pointermove', e => {
+      const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      card.style.setProperty('--mx', (x * 100) + '%'); card.style.setProperty('--my', (y * 100) + '%');
+      const amp = 6 * Math.min(1, 460 / r.width);
+      card.style.transform = `perspective(1400px) rotateX(${(0.5 - y) * amp}deg) rotateY(${(x - 0.5) * amp}deg)`;
+    });
+    card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+  });
+
+  // Magnetic elements
+  document.querySelectorAll('[data-magnetic]').forEach(el => {
+    el.addEventListener('pointermove', e => {
+      const r = el.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+      el.style.transform = `translate(${dx * .22}px, ${dy * .3}px)`;
+    });
+    el.addEventListener('pointerleave', () => { el.style.transform = ''; el.style.transition = 'transform .5s cubic-bezier(.16,1,.3,1)'; setTimeout(() => el.style.transition = '', 500); });
+  });
+
+  // Cursor
+  document.documentElement.classList.add('has-cursor');
+  const dot = $('.cursor-dot'), ring = $('.cursor-ring');
+  let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
+  addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; dot.style.transform = `translate(${mx}px, ${my}px)`; });
+  (function ringLoop() { rx += (mx - rx) * .16; ry += (my - ry) * .16; ring.style.transform = `translate(${rx}px, ${ry}px)`; requestAnimationFrame(ringLoop); })();
+  document.querySelectorAll('a, button, [data-tilt]').forEach(el => {
+    el.addEventListener('pointerenter', () => ring.classList.add('big'));
+    el.addEventListener('pointerleave', () => ring.classList.remove('big'));
+  });
+})();
+</script>
+
+<script type="module">
+/* ---------- Particle point cloud (three.js) ---------- */
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js';
+
+const canvas = document.getElementById('field');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const mobile = matchMedia('(max-width: 760px)').matches;
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
+} catch (e) {
+  document.documentElement.classList.add('no-webgl');
+}
+
+if (renderer) {
+  const N = mobile ? 4800 : 9000;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, .1, 100);
+  camera.position.set(0, 0, 10);
+
+  // Shape A: name sampled from text pixels
+  let textHalfWidth = 6.4;
+  function textPoints() {
+    const portrait = innerWidth / innerHeight < .8;
+    const c = document.createElement('canvas'), W = portrait ? 900 : 1400, H = portrait ? 640 : 360; c.width = W; c.height = H;
+    const g = c.getContext('2d');
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = '800 250px Geist, "Segoe UI", Arial, sans-serif';
+    if (portrait) { g.fillText('JIA', W / 2, H * .28); g.fillText('GUO', W / 2, H * .72); }
+    else g.fillText('JIA GUO', W / 2, H / 2 + 10);
+    const img = g.getImageData(0, 0, W, H).data, pts = [];
+    let maxX = 0;
+    for (let y = 0; y < H; y += 3) for (let x = 0; x < W; x += 3) if (img[(y * W + x) * 4 + 3] > 140) {
+      const px = (x - W / 2) / 110; pts.push([px, -(y - H / 2) / 110]); maxX = Math.max(maxX, Math.abs(px));
+    }
+    textHalfWidth = maxX || 6.4;
+    const out = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+      const p = pts[Math.floor(Math.random() * pts.length)] || [0, 0];
+      out[i * 3] = p[0] + (Math.random() - .5) * .03; out[i * 3 + 1] = p[1] + (Math.random() - .5) * .03 + (innerWidth / innerHeight < .8 ? 1.6 : 1.1); out[i * 3 + 2] = (Math.random() - .5) * .5;
+    }
+    return out;
+  }
+  // Shape B: sphere (fibonacci), like a lidar globe
+  function spherePoints() {
+    const out = new Float32Array(N * 3), R = 3.1;
+    for (let i = 0; i < N; i++) {
+      const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), th = i * 2.399963;
+      const k = R * (1 + (Math.random() - .5) * .05);
+      out[i * 3] = Math.cos(th) * r * k; out[i * 3 + 1] = y * k; out[i * 3 + 2] = Math.sin(th) * r * k;
+    }
+    return out;
+  }
+  // Shape C: terrain plane
+  function planePoints() {
+    const out = new Float32Array(N * 3), cols = Math.ceil(Math.sqrt(N * 2.2)), rows = Math.ceil(N / cols);
+    for (let i = 0; i < N; i++) {
+      const cx = i % cols, cz = Math.floor(i / cols);
+      out[i * 3] = (cx / cols - .5) * 22; out[i * 3 + 1] = -2.6; out[i * 3 + 2] = (cz / rows - .5) * 12 - 1;
+    }
+    return out;
+  }
+
+  const geo = new THREE.BufferGeometry();
+  const posText = textPoints();
+  geo.setAttribute('position', new THREE.BufferAttribute(posText, 3));
+  geo.setAttribute('aText', new THREE.BufferAttribute(posText, 3));
+  geo.setAttribute('aSphere', new THREE.BufferAttribute(spherePoints(), 3));
+  geo.setAttribute('aPlane', new THREE.BufferAttribute(planePoints(), 3));
+  const rnd = new Float32Array(N); for (let i = 0; i < N; i++) rnd[i] = Math.random();
+  geo.setAttribute('aRand', new THREE.BufferAttribute(rnd, 1));
+
+  const uniforms = {
+    uTime: { value: 0 }, uMorph: { value: 0 }, uAudio: { value: 0 }, uMouse: { value: new THREE.Vector2(9, 9) },
+    uHover: { value: 0 }, uAspect: { value: innerWidth / innerHeight }, uPR: { value: renderer.getPixelRatio() },
+    uSize: { value: mobile ? 2.6 : 2.2 }, uOpacity: { value: 1 }, uIntro: { value: 0 }, uFit: { value: 1 }
+  };
+
+  const mat = new THREE.ShaderMaterial({
+    uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: `
+      attribute vec3 aText; attribute vec3 aSphere; attribute vec3 aPlane; attribute float aRand;
+      uniform float uTime, uMorph, uAudio, uHover, uAspect, uPR, uSize, uIntro, uFit;
+      uniform vec2 uMouse;
+      varying float vA; varying float vS;
+      mat2 rot(float a){ float c=cos(a), s=sin(a); return mat2(c,-s,s,c); }
+      void main(){
+        float m1 = clamp(uMorph, 0., 1.), m2 = clamp(uMorph - 1., 0., 1.);
+        float s1 = smoothstep(0., 1., clamp(m1 * 1.5 - aRand * .5, 0., 1.));
+        float s2 = smoothstep(0., 1., clamp(m2 * 1.5 - aRand * .5, 0., 1.));
+        vec3 t = aText; t.xy *= uFit;
+        vec3 sp = aSphere; sp.xz = rot(uTime * .18) * sp.xz; sp.yz = rot(.35) * sp.yz;
+        vec3 pl = aPlane;
+        pl.y += sin(pl.x * .55 + uTime * .7) * .45 + cos(pl.z * .7 + uTime * .5) * .35;
+        vec3 p = mix(t, sp, s1); p = mix(p, pl, s2);
+        // intro: points fly in from a scattered cloud
+        vec3 scatter = vec3((aRand - .5) * 30., sin(aRand * 91.) * 18., cos(aRand * 57.) * 10.);
+        p = mix(scatter, p, smoothstep(0., 1., clamp(uIntro * 1.4 - aRand * .4, 0., 1.)));
+        p += .05 * vec3(sin(uTime * .9 + aRand * 40.), cos(uTime * .7 + aRand * 30.), sin(uTime * .6 + aRand * 20.));
+        p *= 1. + uAudio * .10 * (.4 + aRand);
+        vec4 mv = modelViewMatrix * vec4(p, 1.);
+        vec4 clip = projectionMatrix * mv;
+        vec2 ndc = clip.xy / clip.w; vec2 d = ndc - uMouse; d.x *= uAspect;
+        float dist = length(d);
+        float force = smoothstep(.32, 0., dist) * uHover;
+        vec2 dir = d / max(dist, .0001); dir.x /= uAspect;
+        clip.xy += dir * force * .22 * clip.w;
+        gl_Position = clip;
+        gl_PointSize = uSize * (.55 + aRand * .9) * (1. + uAudio * 1.2 + force * 1.5) * uPR * (9. / -mv.z);
+        vA = .35 + .65 * aRand + force; vS = s1 * (1. - s2);
+      }`,
+    fragmentShader: `
+      uniform float uOpacity; varying float vA; varying float vS;
+      void main(){
+        vec2 c = gl_PointCoord - .5; float d = length(c);
+        if (d > .5) discard;
+        float a = smoothstep(.5, 0., d);
+        vec3 blue = vec3(.49, .77, 1.), white = vec3(.93, .96, 1.);
+        vec3 col = mix(white, blue, .55 + .45 * vS);
+        gl_FragColor = vec4(col, a * vA * .85 * uOpacity);
+      }`
+  });
+  const points = new THREE.Points(geo, mat);
+  scene.add(points);
+
+  function fit() {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    uniforms.uAspect.value = w / h;
+    const visibleW = 2 * Math.tan(THREE.MathUtils.degToRad(25)) * 10 * (w / h);
+    uniforms.uFit.value = Math.min(1.4, (visibleW * .86) / (textHalfWidth * 2));
+  }
+  fit(); addEventListener('resize', fit);
+
+  let targetMouse = new THREE.Vector2(9, 9), tilt = new THREE.Vector2(0, 0), hoverTarget = 0;
+  addEventListener('pointermove', e => {
+    targetMouse.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); tilt.copy(targetMouse); hoverTarget = 1;
+  });
+  addEventListener('pointerleave', () => { hoverTarget = 0; });
+  document.addEventListener('pointerout', e => { if (!e.relatedTarget) hoverTarget = 0; });
+
+  let entered = false, introT = 0;
+  addEventListener('portfolio:enter', () => { entered = true; });
+  setTimeout(() => { entered = true; }, 400); // intro plays behind the boot screen too
+
+  const clock = new THREE.Clock();
+  let audioSmooth = 0;
+  function frame() {
+    const dt = Math.min(clock.getDelta(), .05);
+    if (!reduce) uniforms.uTime.value += dt;
+    if (entered) introT = Math.min(1, introT + dt * (reduce ? 10 : .55));
+    uniforms.uIntro.value = introT;
+    const vh = innerHeight, y = scrollY;
+    const morph = y < vh * .9 ? (y / (vh * .9)) : 1 + Math.min(1, (y - vh * .9) / (vh * 1.4));
+    uniforms.uMorph.value += (morph - uniforms.uMorph.value) * (reduce ? 1 : .08);
+    uniforms.uOpacity.value = y > vh * 2.6 ? Math.max(.35, 1 - (y - vh * 2.6) / (vh * 2)) : 1;
+    uniforms.uMouse.value.lerp(targetMouse, .15);
+    uniforms.uHover.value += (hoverTarget - uniforms.uHover.value) * .08;
+    const lvl = window.Music ? window.Music.level() : 0;
+    audioSmooth += (lvl - audioSmooth) * .25;
+    uniforms.uAudio.value = audioSmooth;
+    points.rotation.y += ((tilt.x * .12) - points.rotation.y) * .03;
+    points.rotation.x += ((-tilt.y * .06) - points.rotation.x) * .03;
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
 </script>
 </body>
 </html>

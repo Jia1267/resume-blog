@@ -258,8 +258,55 @@
   .eq i { width: 3px; height: 4px; background: var(--accent); border-radius: 2px; transition: height .08s linear; }
   @media (max-width: 520px) { .track small { display: none; } }
 
+  /* Hidden terminal (press /) */
+  .term {
+    position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 20px;
+    background: rgb(3 5 8 / .55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    opacity: 0; visibility: hidden; transition: opacity .35s var(--ease), visibility .35s;
+  }
+  .term.open { opacity: 1; visibility: visible; }
+  .term-win {
+    width: min(840px, 100%); height: min(74vh, 640px); display: flex; flex-direction: column; overflow: hidden;
+    background: rgb(8 11 16 / .94); border: 1px solid var(--line-strong); border-radius: var(--radius);
+    box-shadow: 0 30px 90px rgb(0 0 0 / .65), inset 0 1px 0 rgb(255 255 255 / .05);
+    translate: 0 18px; scale: .98; transition: translate .45s var(--ease), scale .45s var(--ease);
+  }
+  .term.open .term-win { translate: 0 0; scale: 1; }
+  .term-bar { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); font: 500 .8rem var(--mono); color: var(--muted); }
+  .term-bar .title { flex: 1; }
+  .term-bar .title b { color: var(--accent); font-weight: 500; }
+  .term-close { background: none; border: 0; color: var(--muted); font-size: 1.1rem; cursor: pointer; padding: 4px; border-radius: 6px; line-height: 0; }
+  .term-close:hover { color: var(--text); }
+  .term-out { flex: 1; overflow-y: auto; padding: 18px 20px 6px; font: .9rem/1.65 var(--mono); color: #cdd6e1; overscroll-behavior: contain; }
+  .tl { white-space: pre-wrap; word-break: break-word; }
+  .tl + .tl { margin-top: 2px; }
+  .tl a { color: var(--accent); text-underline-offset: 3px; }
+  .tl .k { color: var(--accent); }
+  .tl .dim { color: var(--muted); }
+  .tl .err { color: #f3a0a0; }
+  .tl .cmd { color: var(--text); }
+  .tl.gap { margin-top: 12px; }
+  .tgrid { display: grid; grid-template-columns: max-content 1fr; gap: 2px 22px; }
+  .neo { display: grid; grid-template-columns: max-content 1fr; gap: 0 28px; align-items: start; }
+  .neo pre { margin: 0; color: var(--accent); font: inherit; line-height: 1.25; }
+  .term-form { display: flex; align-items: center; gap: 10px; padding: 12px 20px 16px; font: .9rem var(--mono); border-top: 1px solid var(--line); }
+  .term-form label { color: var(--accent); white-space: nowrap; }
+  .term-form input { flex: 1; min-width: 0; background: transparent; border: 0; outline: none; color: var(--text); font: inherit; caret-color: var(--accent); }
+  .term-trigger { background: none; border: 1px solid var(--line); color: var(--muted); font: 500 .8rem var(--mono); padding: 3px 10px; border-radius: 999px; cursor: pointer; }
+  .term-trigger:hover { color: var(--text); border-color: var(--accent); }
+  html.term-open body { overflow: hidden; }
+  @media (max-width: 600px) {
+    .term { padding: 10px; align-items: end; }
+    .term-win { height: 82dvh; }
+    .term-out, .term-form { font-size: .8rem; }
+    .tgrid { grid-template-columns: 1fr; gap: 0; }
+    .tgrid .k { margin-top: 6px; }
+    .neo { grid-template-columns: 1fr; }
+    .neo pre { margin-bottom: 10px; }
+  }
+
   /* Custom cursor (fine pointers only) */
-  .cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; z-index: 60; pointer-events: none; border-radius: 50%; opacity: 0; }
+  .cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; z-index: 80; pointer-events: none; border-radius: 50%; opacity: 0; }
   .cursor-dot { width: 6px; height: 6px; background: var(--accent); margin: -3px 0 0 -3px; }
   .cursor-ring { width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1px solid rgb(124 196 255 / .55); transition: width .3s var(--ease), height .3s var(--ease), margin .3s var(--ease), background-color .3s; }
   .cursor-ring.big { width: 72px; height: 72px; margin: -36px 0 0 -36px; background: rgb(124 196 255 / .08); }
@@ -275,6 +322,7 @@
     .marquee-track { animation: none; flex-wrap: wrap; width: auto; }
     .disc { animation: none; }
     .card, .card .media img { transition: none; }
+    .term, .term-win { transition: none; }
   }
 </style>
 </head>
@@ -327,7 +375,7 @@
           <a class="btn btn-ghost" href="#contact" data-magnetic>Contact</a>
         </div>
       </div>
-      <p class="hint reveal" style="--i:3">move your cursor through the point cloud<br>scroll to reshape it · <kbd>M</kbd> music</p>
+      <p class="hint reveal" style="--i:3">move your cursor through the point cloud<br>scroll to reshape it · <kbd>M</kbd> music<br>curious? press <kbd>/</kbd></p>
     </div>
   </section>
 
@@ -476,7 +524,7 @@
 <footer>
   <div class="wrap">
     <span>© 2026 Jia Guo. Music is generated live in your browser.</span>
-    <a href="classic.html">Classic version</a>
+    <span><button class="term-trigger" id="termTrigger" aria-label="Open terminal">&gt;_</button> &nbsp; <a href="classic.html">Classic version</a></span>
   </div>
 </footer>
 
@@ -484,6 +532,20 @@
   <button class="disc" id="disc" aria-label="Play music"><span class="ic"><i class="ph ph-play" id="discIcon"></i></span></button>
   <div class="track"><b>Night Signal</b><small>generative ambient</small></div>
   <div class="eq" id="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+</div>
+
+<div class="term" id="term" role="dialog" aria-modal="true" aria-label="Terminal" hidden>
+  <div class="term-win">
+    <div class="term-bar">
+      <span class="title"><b>jia@columbia</b>: ~</span>
+      <button class="term-close" id="termClose" aria-label="Close terminal"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="term-out" id="termOut" aria-live="polite"></div>
+    <form class="term-form" id="termForm" autocomplete="off">
+      <label for="termIn">jia@columbia:~$</label>
+      <input id="termIn" type="text" spellcheck="false" autocapitalize="off" aria-label="Terminal command">
+    </form>
+  </div>
 </div>
 
 <script>
@@ -638,8 +700,10 @@ window.Music = Music;
     discIcon.className = on ? 'ph ph-pause' : 'ph ph-play';
     disc.setAttribute('aria-label', on ? 'Pause music' : 'Play music');
   }
+  window.toggleMusic = toggleMusic;
   disc.addEventListener('click', () => toggleMusic());
   addEventListener('keydown', e => {
+    if (e.target.closest('input, textarea, [contenteditable]')) return;
     if ((e.key === 'm' || e.key === 'M') && !e.metaKey && !e.ctrlKey && !e.altKey && boot.classList.contains('gone')) toggleMusic();
   });
   const eqBars = [...document.querySelectorAll('#eq i')];
@@ -723,6 +787,251 @@ window.Music = Music;
   document.querySelectorAll('a, button, [data-tilt]').forEach(el => {
     el.addEventListener('pointerenter', () => ring.classList.add('big'));
     el.addEventListener('pointerleave', () => ring.classList.remove('big'));
+  });
+})();
+</script>
+
+<script>
+/* ---------- Hidden terminal: press / to browse the resume by command ---------- */
+(() => {
+  const term = document.getElementById('term'), out = document.getElementById('termOut');
+  const form = document.getElementById('termForm'), input = document.getElementById('termIn');
+  const boot = document.getElementById('boot');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const history = []; let hIdx = 0, greeted = false, lastFocus = null, closeTimer = null;
+
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const a = (href, text) => `<a href="${href}" target="_blank" rel="noopener">${text}</a>`;
+  function print(html, cls) {
+    const d = document.createElement('div'); d.className = 'tl' + (cls ? ' ' + cls : ''); d.innerHTML = html;
+    out.appendChild(d); out.scrollTop = out.scrollHeight; return d;
+  }
+  const grid = rows => `<div class="tgrid">${rows.map(([k, v]) => `<span class="k">${k}</span><span>${v}</span>`).join('')}</div>`;
+
+  const projects = [
+    { id: 'yolo', name: 'Real-Time Object Detection & Tracking', desc: 'YOLOv8 fine-tuned on a custom 6-class dataset merged from 11 sources. Live webcam detection and multi-object tracking.', metric: '96.3% mAP@0.5, 94.2% precision, 93.6% recall', stack: 'Python, PyTorch, YOLOv8, OpenCV', url: 'https://github.com/Jia1267/CS4391_YOLO' },
+    { id: 'uninest', name: 'UniNest', desc: 'Live student-housing platform for New York: 62 buildings, 507 units, 3D city map, budget-based search.', metric: '1,000+ visits since launch', stack: 'TypeScript, Maps APIs, data pipelines', url: 'https://uninestny.com' },
+    { id: 'rnn', name: 'RNN & LSTM Forecasting', desc: 'From-scratch NumPy RNN and hand-built PyTorch LSTM for next-day stock prices. Team project.', metric: 'RNN test RMSE 393.6', stack: 'NumPy, PyTorch, pandas', url: 'https://github.com/Jia1267/CS4375-RNN-LSTM-Stock-Prediction' },
+    { id: 'game', name: 'Office Worker Rush', desc: 'Three-lane endless runner built as a WeChat Mini Game on the raw Canvas API.', metric: 'Swipe controls, power-ups, rising difficulty', stack: 'JavaScript, Canvas', url: 'https://github.com/Jia1267/WechaRun' }
+  ];
+  const sections = { top: '#top', home: '#top', projects: '#projects', research: '#research', experience: '#experience', contact: '#contact' };
+  const files = { 'about.txt': 'about', 'education.txt': 'education', 'experience.log': 'experience', 'research.md': 'research', 'projects.md': 'projects', 'skills.json': 'skills', 'contact.vcf': 'contact', 'resume.pdf': 'resume' };
+
+  const cmds = {
+    help() {
+      print(grid([
+        ['whoami', 'who is behind this page'],
+        ['about', 'short introduction'],
+        ['education', 'degrees and schools'],
+        ['experience', 'work history'],
+        ['research', 'research projects'],
+        ['projects', 'selected projects'],
+        ['open &lt;name&gt;', 'open a project, e.g. open yolo'],
+        ['skills', 'languages, ML, systems'],
+        ['contact', 'how to reach me'],
+        ['resume', 'everything above in one go'],
+        ['neofetch', 'system info, portfolio edition'],
+        ['ls / cat &lt;file&gt;', 'browse the resume as files'],
+        ['goto &lt;section&gt;', 'jump to a section of the page'],
+        ['music on|off', 'control the soundtrack'],
+        ['clear, history, exit', 'the usual']
+      ]));
+      print('<span class="dim">Tab completes commands. Arrow keys walk your history. There may be a few commands not listed here.</span>', 'gap');
+    },
+    whoami() { print('<span class="k">Jia Guo</span>\nM.S. in Artificial Intelligence (Robotics) @ Columbia University\nB.S. in Computer Science @ UT Dallas'); },
+    about() {
+      print('I build machine learning, computer vision, and software systems, and I care most about where AI meets the physical world: perception, robotics, and products that run in production.');
+      print('<span class="dim">Currently looking for AI/ML, software engineering, and robotics internships and full-time roles.</span>', 'gap');
+    },
+    education() {
+      print(grid([
+        ['Columbia University', 'M.S. in Artificial Intelligence, Robotics<span class="dim">  Sep 2026 - Dec 2027</span>'],
+        ['UT Dallas', 'B.S. in Computer Science, GPA 3.45<span class="dim">  Aug 2023 - May 2026</span>']
+      ]));
+      print('<span class="dim">coursework:</span> AI, Machine Learning, Computer Vision, Algorithms, Data Structures, Databases, Operating Systems', 'gap');
+    },
+    experience() {
+      print('<span class="k">Data Center Operations Intern</span>  Database Mart, Dallas  <span class="dim">May 2026 - Aug 2026</span>\n  - Raised daily server build and test throughput by 150% (about 10 to 25 servers)\n  - Deployed and validated 100+ servers: Windows, Linux, RAID, BIOS, BMC/IPMI, networking\n  - Automated IP and IPMI lookups with PowerShell, wrote 5 SOP documents');
+      print('<span class="k">Web Developer</span>  U.S. Chinese Immigrants Center, Remote  <span class="dim">Jan 2024 - Jan 2025</span>\n  - Built and deployed a production site on WordPress and AWS (EC2, RDS, S3)\n  - Maintained the site, backend services, and infrastructure for 12 months', 'gap');
+    },
+    research() {
+      print('<span class="k">Transfer Learning & Explainable AI for ECG</span>  UT Dallas  <span class="dim">Jan 2026 - Aug 2026</span>\n  - Benchmarked K-Means, GMM, PCA-based clustering, and Birch on ECG5000 (GMM: 97.8% accuracy)\n  - Built transfer features and an LLM explanation layer grounded in 2,079 normal ECG samples');
+      print('<span class="k">Uncertainty-Aware Deep Learning</span>  AI Safety Lab, UT Dallas  <span class="dim">Sep 2023 - Jan 2024</span>\n  - Curated 500+ images across 20 categories for the ICLR 2024 Hyper Evidential Deep Learning project', 'gap');
+    },
+    projects() {
+      projects.forEach((p, i) => print(`<span class="dim">[${i + 1}]</span> <span class="k">${p.id}</span>  ${p.name}\n    ${p.desc}\n    <span class="dim">${p.metric} | ${p.stack}</span>`, i ? 'gap' : ''));
+      print('<span class="dim">Type</span> open yolo <span class="dim">or</span> open 2 <span class="dim">to view one.</span>', 'gap');
+    },
+    open(arg) {
+      if (!arg) return print('usage: open &lt;name|number&gt;   try: open yolo', 'dim');
+      const p = projects.find((x, i) => x.id === arg.toLowerCase() || String(i + 1) === arg);
+      if (!p) return print(`<span class="err">open: no project named "${esc(arg)}".</span> Type projects to list them.`);
+      window.open(p.url, '_blank', 'noopener');
+      print(`Opening ${p.name} in a new tab: ${a(p.url, p.url)}`);
+    },
+    skills() {
+      print(`{
+  <span class="k">"languages"</span>: ["Python", "C++", "Java", "JavaScript/TypeScript", "SQL"],
+  <span class="k">"ml_cv"</span>: ["PyTorch", "scikit-learn", "OpenCV", "YOLO", "NumPy", "pandas"],
+  <span class="k">"systems"</span>: ["Linux", "AWS", "FastAPI", "Git", "MySQL"],
+  <span class="k">"spoken"</span>: ["English", "Mandarin Chinese"]
+}`);
+    },
+    contact() {
+      print(grid([
+        ['email', a('mailto:jg5195@columbia.edu', 'jg5195@columbia.edu')],
+        ['linkedin', a('https://www.linkedin.com/in/jia-guo-ai', 'linkedin.com/in/jia-guo-ai')],
+        ['github', a('https://github.com/Jia1267', 'github.com/Jia1267')],
+        ['project', a('https://uninestny.com', 'uninestny.com')]
+      ]));
+    },
+    resume() {
+      [['whoami'], ['about'], ['education'], ['experience'], ['research'], ['projects'], ['skills'], ['contact']].forEach(([c], i) => {
+        print(`<span class="dim">## ${c}</span>`, i ? 'gap' : ''); cmds[c]();
+      });
+    },
+    neofetch() {
+      const art = [
+        '    .-----------.   ',
+        '   /  .-------.  \\  ',
+        '  |  /  .---.  \\  | ',
+        '  | |  ( (o) )  | | ',
+        '  |  \\  \'---\'  /  | ',
+        '   \\  \'-------\'  /  ',
+        '    \'-----------\'   '
+      ].join('\n');
+      const playing = window.Music && window.Music.playing;
+      print(`<div class="neo"><pre>${esc(art)}</pre><div><span class="k">jia</span>@<span class="k">columbia</span>
+<span class="dim">-------------------</span>
+<span class="k">Program</span>:  M.S. Artificial Intelligence (Robotics)
+<span class="k">Host</span>:     Columbia University, New York
+<span class="k">Kernel</span>:   B.S. Computer Science, UT Dallas
+<span class="k">Shell</span>:    Python, C++, Java, TypeScript
+<span class="k">Focus</span>:    perception, learning, robotics
+<span class="k">Renderer</span>: three.js, 9,000 point cloud
+<span class="k">Music</span>:    Night Signal (${playing ? 'playing' : 'paused'})
+<span class="k">Status</span>:   open to work</div></div>`);
+    },
+    ls() { print(Object.keys(files).map(f => `<span class="k">${f}</span>`).join('   ')); },
+    cat(arg) {
+      if (!arg) return print('usage: cat &lt;file&gt;   try: ls', 'dim');
+      if (arg === 'resume.pdf') return print('<span class="dim">Binary file. Rendering it as text instead...</span>'), cmds.resume();
+      const c = files[arg];
+      if (!c) return print(`<span class="err">cat: ${esc(arg)}: No such file.</span> Type ls to see files.`);
+      cmds[c]();
+    },
+    goto(arg) {
+      const target = sections[(arg || '').toLowerCase()];
+      if (!target) return print(`usage: goto &lt;${Object.keys(sections).filter(k => k !== 'home').join('|')}&gt;`, 'dim');
+      close(); setTimeout(() => document.querySelector(target).scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }), 200);
+    },
+    async music(arg) {
+      if (!window.toggleMusic) return print('music: player not ready', 'err');
+      const want = arg === 'on' ? true : arg === 'off' ? false : !window.Music.playing;
+      await window.toggleMusic(want);
+      print(want ? 'Now playing: Night Signal, generated live in your browser.' : 'Music paused.');
+    },
+    history() { print(history.map((h, i) => `<span class="dim">${String(i + 1).padStart(3)}</span>  ${esc(h)}`).join('\n') || '<span class="dim">no history yet</span>'); },
+    echo(...args) { print(esc(args.join(' '))); },
+    date() { print(new Date().toString()); },
+    clear() { out.innerHTML = ''; },
+    exit() { close(); },
+    hire() { cmds.sudo('hire-jia'); },
+    sudo(arg) {
+      if (arg === 'hire-jia' || arg === 'hire') {
+        print('[sudo] password for recruiter: ********');
+        print('<span class="k">Access granted.</span> Great choice. Let\'s talk: ' + a('mailto:jg5195@columbia.edu?subject=Let%27s%20talk', 'jg5195@columbia.edu'), 'gap');
+      } else print('<span class="err">Permission denied.</span> Nice try though. Hint: sudo hire-jia');
+    },
+    rm(...args) { print(args.join(' ').includes('-rf') ? '<span class="err">rm: refusing to delete a portfolio.</span> Try sudo hire-jia instead.' : 'rm: this filesystem is read-only.'); },
+    vim() { print('You are now stuck in vim. Just kidding. Type exit to leave the terminal.'); },
+    coffee() { print('Brewing coffee... done. Robots run on electricity, grad students run on coffee.'); }
+  };
+  const aliases = { '?': 'help', cls: 'clear', quit: 'exit', cv: 'resume', edu: 'education', exp: 'experience', work: 'experience', proj: 'projects', mail: 'contact', dir: 'ls', cd: 'goto', emacs: 'vim', nano: 'vim' };
+  const visible = ['help', 'whoami', 'about', 'education', 'experience', 'research', 'projects', 'open', 'skills', 'contact', 'resume', 'neofetch', 'ls', 'cat', 'goto', 'music', 'history', 'clear', 'exit'];
+
+  function run(raw) {
+    const line = raw.trim();
+    print(`<span class="k">jia@columbia:~$</span> <span class="cmd">${esc(line)}</span>`, out.children.length ? 'gap' : '');
+    if (!line) return;
+    history.push(line); hIdx = history.length;
+    const [first, ...rest] = line.split(/\s+/);
+    const name = aliases[first.toLowerCase()] || first.toLowerCase();
+    if (name === 'sudo') return cmds.sudo(rest.join(' ').toLowerCase());
+    const fn = cmds[name];
+    if (!fn) return print(`<span class="err">command not found: ${esc(first)}</span>  Type help to see what I can do.`);
+    try { fn(...rest); } catch (e) { print('<span class="err">Something broke. Try again.</span>'); }
+  }
+
+  function complete() {
+    const val = input.value, parts = val.split(/\s+/);
+    let pool, prefix;
+    if (parts.length <= 1) { pool = visible; prefix = parts[0] || ''; }
+    else {
+      const c = parts[0].toLowerCase(); prefix = parts[parts.length - 1];
+      pool = c === 'cat' ? Object.keys(files) : c === 'open' ? projects.map(p => p.id) : (c === 'goto' || c === 'cd') ? Object.keys(sections) : c === 'music' ? ['on', 'off'] : [];
+    }
+    const hits = pool.filter(x => x.startsWith(prefix.toLowerCase()));
+    if (hits.length === 1) { parts[parts.length - 1] = hits[0]; input.value = parts.join(' ') + ' '; }
+    else if (hits.length > 1) print(hits.map(h => `<span class="k">${h}</span>`).join('   '), 'dim');
+  }
+
+  function greet() {
+    const lines = ['Welcome to jia\'s portfolio shell.', 'Type <span class="k">help</span> to see commands, or try <span class="k">neofetch</span>.'];
+    if (reduce) { lines.forEach(l => print(l)); return; }
+    let i = 0;
+    (function next() {
+      if (i >= lines.length) return;
+      const el = print(''), html = lines[i++], plain = html.replace(/<[^>]+>/g, '');
+      let n = 0;
+      (function type() {
+        n += 2; el.textContent = plain.slice(0, n);
+        if (n < plain.length) setTimeout(type, 14); else { el.innerHTML = html; setTimeout(next, 120); }
+      })();
+    })();
+  }
+
+  function open() {
+    if (term.classList.contains('open')) return;
+    clearTimeout(closeTimer);
+    lastFocus = document.activeElement;
+    term.hidden = false;
+    document.documentElement.classList.add('term-open');
+    requestAnimationFrame(() => { term.classList.add('open'); input.focus({ preventScroll: true }); });
+    if (!greeted) { greeted = true; greet(); }
+  }
+  function close() {
+    if (!term.classList.contains('open')) return;
+    term.classList.remove('open');
+    document.documentElement.classList.remove('term-open');
+    closeTimer = setTimeout(() => { term.hidden = true; }, reduce ? 0 : 360);
+    if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+  }
+
+  form.addEventListener('submit', e => { e.preventDefault(); const v = input.value; input.value = ''; run(v); });
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Tab') { e.preventDefault(); complete(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); if (hIdx > 0) { hIdx--; input.value = history[hIdx]; } }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); if (hIdx < history.length - 1) { hIdx++; input.value = history[hIdx]; } else { hIdx = history.length; input.value = ''; } }
+    else if (e.key === 'l' && e.ctrlKey) { e.preventDefault(); cmds.clear(); }
+  });
+  addEventListener('keydown', e => {
+    if (e.key === 'Escape' && term.classList.contains('open')) { e.preventDefault(); close(); return; }
+    if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.target.closest('input, textarea, [contenteditable]')) return;
+    if (!boot.classList.contains('gone')) return;
+    e.preventDefault(); open();
+  });
+  term.addEventListener('click', e => { if (e.target === term) close(); });
+  out.addEventListener('click', () => { if (!getSelection().toString()) input.focus({ preventScroll: true }); });
+  document.getElementById('termClose').addEventListener('click', close);
+  document.getElementById('termTrigger').addEventListener('click', open);
+
+  // Touch devices: tap the logo five times quickly
+  let taps = 0, tapTimer = null;
+  document.querySelector('.brand').addEventListener('click', () => {
+    taps++; clearTimeout(tapTimer); tapTimer = setTimeout(() => { taps = 0; }, 1600);
+    if (taps >= 5) { taps = 0; open(); }
   });
 })();
 </script>
